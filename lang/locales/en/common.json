@@ -1,0 +1,389 @@
+{
+  "navbar": {
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign up"
+  },
+  "home": {
+    "one": "Top Provider of ",
+    "two": "Professional Training Courses",
+    "des": "Advancing employee skills and driving business growth through tailored training programs for companies worldwide.",
+    "cateheadingtitle": "Take Your First Step Towards",
+    "cateheadinghighlight": "Achieving Professional Goals",
+    "courseheadingtitle": "Latest",
+    "courseheadinghighlight": "Courses",
+    "coursecityheadingtitle": "Latest",
+    "coursecityheadinghighlight": "Offered By Location",
+    "testimonialsheadingtitle": "What Customer are",
+    "testimonialsheadinghighlight": "Saying?",
+    "reqacourse": "Request a Course",
+    "reqacoursedec": "Get in touch with us to arrange a customized course tailored to your needs."
+  },
+  "specialization": {
+    "mastering": "Mastering",
+    "category_list": "Categories List"
+  },
+  "table": {
+    "citytitle": "City Title",
+    "option": " Options",
+    "viewall": "View All Courses",
+    "cityTitle": "City Title",
+    "options": "Options",
+    "viewAllCourses": "View All Courses",
+    "courseTitle": "Course Title",
+    "dates": "Dates",
+    "cities": "Cities",
+    "price": "Price",
+    "noData": "No data available.",
+    "selectDate": "Select Date",
+    "selectCity": "Select City",
+    "register": "Register"
+  },
+  "form": {
+    "fullname": "Full Name",
+    "fullnameplaceholder": "Enter your full name",
+
+    "email": "Email",
+    "emailplaceholder": "Enter your email address",
+
+    "phnnumber": "Mobile Number",
+    "phnnumberplaceholder": "Enter your mobile number",
+
+    "category": "Category",
+    "selectcategory": "Select a category",
+
+    "messageLabel": "Message",
+    "messagePlaceholder": "Enter your message",
+
+    "city": "City",
+    "selectcity": "Select a city",
+    "submitButton": "Submit",
+    "submittingButton": "Submitting...",
+    "processing": "Processing...",
+    "sendreq": "Send Request",
+    "consultationLabel": "Consultation for"
+  },
+  "programs": {
+    "heroheading": "Export Our"
+  },
+  "consultation": {
+    "heading": "Explore Our",
+    "highlight": "Consultations",
+    "consultation_services_academy": "Consultation Services in Academy",
+    "new_articles_interesting": "New Articles You May Find Interesting",
+    "search": "Search...",
+    "consultationIn": "Consultation In",
+    "consultation_service_in_academy": "Consultation Services in Academy",
+    "newArticles": "New Articles You May Find Interesting",
+    "whyChoose": "Why Choose",
+    "consultSection": {
+      "heading": "Consult with Us",
+      "subtitle": "Let's shape the future of learning together. Book a consultation today!"
+    }
+  },
+  "city": {
+    "courses_offered_by": "Our Top",
+    "location": "Training Cities",
+    "training_courses_in": "Training Courses in"
+  },
+  "about": {
+    "head": {
+      "headerTitle": "About Crown London Institute",
+      "headerSubtitle": "Empowering Professionals, Transforming Futures.",
+      "whatWeDoTitle": "What we do",
+      "whatWeDoDescription": "Crown London Institute is a premier training provider committed to delivering high-quality professional development programs. Based in the heart of London, we specialize in equipping individuals and organizations with the skills and knowledge required to excel in today’s dynamic business environment. Our courses are designed to meet the evolving needs of professionals across various industries, ensuring that they stay ahead in an increasingly competitive world.",
+      "stats": {
+        "satisfaction": "Course Satisfaction Rate",
+        "trained": "Professionals Trained",
+        "partners": "Corporate Companies Partners",
+        "repeatClients": "Repeat Clients"
+      },
+      "missionTitle": "Our Mission",
+      "missionDescription": "At Crown London Institute, our mission is to empower professionals and organizations through cutting-edge training programs that foster innovation, leadership, and excellence. We believe that continuous learning is the key to success, and we are dedicated to providing practical, industry-relevant education that enhances career growth and business performance.",
+      "offerTitle": "What We Offer",
+      "offer": {
+        "corporateTrainingTitle": "Corporate Training",
+        "corporateTrainingDescription": "Tailored programs for organizations looking to upskill their workforce.",
+        "executiveDevTitle": "Executive Development",
+        "executiveDevDescription": "Advanced training for business leaders and senior professionals.",
+        "technicalCoursesTitle": "Technical & Industry-Specific Courses",
+        "technicalCoursesDescription": "Specialized training in finance, project management, technology, healthcare, and more.",
+        "complianceTrainingTitle": "Compliance & Regulatory Training",
+        "complianceTrainingDescription": "Ensuring businesses and individuals stay compliant with industry standards."
+      },
+      "whyChooseUsTitle": "Why Choose Us?"
+    },
+    "benefits": {
+      "expertInstructorsTitle": "Expert Instructors",
+      "expertInstructorsDescription": "Our courses are led by experienced professionals, industry experts, and thought leaders who bring real-world insights into the classroom.",
+
+      "practicalLearningTitle": "Practical Learning Approach",
+      "practicalLearningDescription": "We focus on hands-on training, case studies, and interactive sessions to ensure that participants gain practical knowledge that can be immediately applied in their professional roles.",
+
+      "customizedTrainingTitle": "Customized Training Solutions",
+      "customizedTrainingDescription": "Understanding that every organization has unique training needs, we offer customized training solutions that align with specific business objectives."
+    }
+  },
+  "contact": {
+    "headerTitle": "Contact Us",
+    "introText": "At Crown London Institute, we're committed to assisting you at every stage. If you have any questions about our courses or services or need further information, simply fill out the form below with a brief description of your inquiry, and we'll get back to you promptly.",
+    "formTitleI": "Get in",
+    "formTitleII": "Touch",
+    "form": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send",
+      "sending": "Sending..."
+    },
+    "emailContact": "privacy@clinstitute.co.uk"
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "sections": {
+      "introduction": {
+        "title": "Crown London Institute",
+        "content": "Effective Date: 01-February-2025\n\nCrown London Institute (\"we,\" \"our,\" or \"us\") is committed to protecting your privacy and ensuring that your personal data is handled securely and in compliance with applicable UK data protection laws, including the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.\n\nThis Privacy Policy explains how we collect, use, store, and protect your personal data when you register for our training courses or interact with our services."
+      },
+      "information-we-collect": {
+        "title": "1. Information We Collect",
+        "content": "When you register for a course or use our services, we may collect the following personal data:\n\n- Identity Information – Full name, job title, and company details.\n- Contact Information – Phone number, email address, and mailing address.\n- Payment Information – Billing details for course registration and transactions.\n- Course Preferences – Information on courses of interest and training history.\n- Marketing Preferences – Your consent for receiving updates and promotional material."
+      },
+      "how-we-use-your-data": {
+        "title": "2. How We Use Your Data",
+        "content": "We collect and process personal data for the following purposes:\n\n- Course Registration & Administration: To register you for training programs and manage course participation.\n- Communication: To send confirmation emails, course updates, and respond to inquiries.\n- Marketing & Future Contact: To keep you informed about future courses, offers, and related services (if you have given consent).\n- Legal & Compliance Requirements: To comply with legal obligations and UK regulations."
+      },
+      "data-retention": {
+        "title": "3. Data Retention",
+        "content": "We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy.\n\nIf you register for a course, we may keep your information for future contact unless you request its deletion."
+      },
+      "data-security": {
+        "title": "4. Data Protection & Security",
+        "content": "We take appropriate technical and organizational measures to protect your personal data against unauthorized access, loss, or misuse."
+      },
+      "sharing-your-data": {
+        "title": "5. Sharing Your Data",
+        "content": "We do not sell or rent your personal data. However, we may share it in the following cases:\n\n- With Service Providers: Third-party providers assisting in course management, IT support, or payment processing.\n- Legal Requirements: If required by law or regulatory authorities."
+      },
+      "your-rights": {
+        "title": "6. Your Rights Under UK GDPR",
+        "content": "You have the right to:\n\n- Access the personal data we hold about you.\n- Request corrections to inaccurate data.\n- Withdraw consent for marketing communications.\n- Request deletion of your personal data (subject to legal obligations).\n- Object to data processing in certain cases."
+      },
+      "contact": {
+        "title": "7. Contact Us",
+        "content": "If you have any questions or wish to exercise your rights, please contact us at:\n\nCrown London Institute\n6th Floor, 2 Kingdom St, London W2 6BD, United Kingdom\nEmail: privacy@clinstitute.co.uk"
+      },
+      "updates": {
+        "title": "8. Updates to This Policy",
+        "content": "We may update this policy from time to time to reflect changes in regulations or our practices.\n\nAny significant changes will be communicated to you.\n\nBy registering for our courses or using our services, you acknowledge that you have read and understood this Privacy Policy."
+      }
+    }
+  },
+
+  "footer": {
+    "heading": "About London Crown Institute of Training",
+    "desc": "London Crown Institute of Training is a premier training provider committed to delivering high-quality professional development programs. Based in the heart of London, we specialize in equipping individuals and organizations with the skills and knowledge required to excel in today’s dynamic business environment.",
+    "address": "Office address: 6th Floor, 2 Kingdom St, London W2 6BD, United Kingdom",
+    "quicklinktitle": "Quick Links"
+  },
+  "notes": {
+    "title": "Mastering the Project Stages: A Comprehensive Training Course",
+    "intro": "Managing projects successfully requires a deep understanding of the project lifecycle and the skills to navigate each stage effectively. Our Project Stages Training Course is designed to equip you with the knowledge and tools to excel in every phase of project management, from initiation to closure.",
+    "whatItCovers": "What Does the Course Cover?",
+    "stages": {
+      "initiation": {
+        "title": "Initiation",
+        "point1": "Learn how to define the project scope, objectives, and deliverables.",
+        "point2": "Develop skills to identify key stakeholders and create a project charter.",
+        "point3": "Gain insights into feasibility analysis and risk identification."
+      },
+      "planning": {
+        "title": "Planning",
+        "point1": "Master the art of creating detailed project plans, timelines, and budgets.",
+        "point2": "Understand resource allocation and learn how to develop a robust risk management plan.",
+        "point3": "Explore tools and techniques for setting milestones and performance metrics."
+      },
+      "execution": {
+        "title": "Execution",
+        "point1": "Discover how to implement project plans effectively while managing resources.",
+        "point2": "Learn team management, task delegation, and conflict resolution strategies.",
+        "point3": "Understand how to track progress using project management software."
+      },
+      "monitoring": {
+        "title": "Monitoring and Controlling",
+        "point1": "Explore techniques for tracking performance and making real-time adjustments.",
+        "point2": "Learn how to manage change requests, ensure quality control, and maintain alignment with project goals.",
+        "point3": "Gain insights into reporting tools to keep stakeholders informed."
+      },
+      "closure": {
+        "title": "Closure",
+        "point1": "Understand the importance of proper project closure, including delivering outcomes and final documentation.",
+        "point2": "Learn how to conduct post-project evaluations to identify successes and lessons learned.",
+        "point3": "Explore best practices for celebrating achievements and disbanding project teams."
+      }
+    }
+  },
+  "academyservice": "Academy Services",
+  "login": {
+    "heading": "Welcome Back!",
+    "subheading": "Login to access your account.",
+    "username_label": "User Name",
+    "username_placeholder": "Enter your Email",
+    "password_label": "Password",
+    "password_placeholder": "Enter your Password",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot Password?",
+    "submit": "Login",
+    "submitting": "Logging in...",
+    "error": "Something went wrong. Please try again.",
+    "forgot_password_title": "Forgot Password",
+    "forgot_password_label": "Enter your email",
+    "forgot_password_placeholder": "Your Email",
+    "forgot_password_submit": "Confirm",
+    "forgot_password_message": "If this email exists, you’ll receive a reset link shortly."
+  },
+  "register": {
+    "heading": "Create an Account",
+    "error_heading": "Registration failed",
+    "full_name_label": "Full Name",
+    "full_name_placeholder": "Enter your full name",
+    "username_label": "Username",
+    "username_placeholder": "Choose a username",
+    "email_label": "Email Address",
+    "email_placeholder": "Enter your email",
+    "password_label": "Password",
+    "password_placeholder": "Enter a strong password",
+    "confirm_password_label": "Confirm Password",
+    "confirm_password_placeholder": "Confirm your password",
+    "submit": "Sign Up",
+    "submitting": "Creating Account...",
+    "login_redirect": "Already have an account?",
+    "login_link": "Log in"
+  },
+  "courseDetails": {
+    "course.title": "Course Title",
+    "register": "Register",
+    "availableDates": "Available Dates",
+    "customDateSelection": "Custom Date Selection",
+    "selectedCustomDate": "Selected custom date:",
+    "availableCities": "Available Cities",
+    "price": "Price",
+    "summary": "Summary",
+    "objectivesAndTargetGroup": "Objectives and Target Group",
+    "courseContent": "Course Content",
+    "language": "Language",
+    "certificate": "Certificate",
+    "certificateProvided": "Certificate Provided",
+    "noCertificate": "No Certificate",
+    "date": "Date",
+    "selectDate": "Select a Date",
+    "city": "City",
+    "registerNow": "Register Now",
+    "englishArabic": "English / Arabic"
+  },
+  "blog": {
+    "relatedArticles": "New Articles",
+    "highlight": "You May Find Interesting",
+    "detail": "Details",
+    "blog": "Blogs",
+    "explore": "Explore"
+  },
+  "reg": {
+    "register_course": "Register Course",
+    "course_title": "Course Title",
+    "course_title_placeholder": "Enter the course title",
+    "select_category": "Select Category",
+    "select_specialization": "Select Specialization",
+    "select_city": "Select City",
+    "english": "English",
+    "arabic": "Arabic",
+    "available_dates": "Available Dates",
+    "date": "Date",
+    "participant_form": "Participant Form",
+    "participant_type": "Participant Type",
+    "company": "Company",
+    "person": "Person",
+    "company_details": "Company Details",
+    "participant_details": "Participant Details",
+    "full_name": "Full Name",
+    "email": "Email",
+    "job_title": "Job Title",
+    "phone": "Phone",
+    "valid_phone_number": "Please enter a valid phone number",
+    "add_participants": "Add Participants",
+    "participant_name": "Participant Name",
+    "participant_email": "Participant Email",
+    "participant_phone": "Participant Phone",
+    "remove": "Remove",
+    "add_more_participants": "Add More Participants",
+    "submit": "Submit"
+  },
+  "mobilefiltercomponent": {
+    "searchPlaceholder": "Search in specific course",
+    "selectProgram": "Select Program",
+    "programOptions": {
+      "trainingCourses": "Training Courses",
+      "diploma": "Diploma",
+      "masters": "Masters"
+    },
+    "selectSpecialization": "Select Specialization",
+    "specializationOptions": {
+      "specialization1": "Specialization 1",
+      "specialization2": "Specialization 2",
+      "specialization3": "Specialization 3"
+    },
+    "selectCity": "Select City",
+    "monthOptions": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "toastMessages": {
+      "programRequired": "Please select a program"
+    }
+  },
+  "personal_info": {
+    "tab": "Personal Information",
+    "title": "Personal Information",
+    "description": "Manage your information including phone numbers and email address where you can be contacted",
+    "name": "Name",
+    "status": "Status",
+    "language": "Language",
+    "contact": "Contactable at"
+  },
+  "filters": {
+    "searchPlaceholder": "Search in specific course",
+    "searchButton": "Search",
+    "monthLabel": "Month",
+    "yearLabel": "Year",
+    "specializationLabel": "Specialization",
+    "categoryLabel": "Category",
+    "cityLabel": "City",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
+  }
+}
