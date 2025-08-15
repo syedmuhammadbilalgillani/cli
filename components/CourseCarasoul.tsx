@@ -159,7 +159,7 @@ const CourseCarousel = ({ courses }: CourseCarouselProps) => {
                     {/* Action Buttons */}
                     <div className="mt-4 flex justify-between w-full">
                       <Link
-                        href={`/${course.available_cities[0]?.slug}/${course.specialization_slug}/${course.category_slug}/${course.slug}`}
+                        href={`/${course.specialization_slug}/${course.category_slug}/${course.slug}`}
                         className="bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-secondary transition"
                       >
                         Details
