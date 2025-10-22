@@ -3,10 +3,8 @@ import CourseDetal from "@/components/CourseDetail";
 import HeroSection from "@/components/HeroSection";
 import Loading from "@/components/Loading";
 import { DOMAIN_URL, LOCALE_LANGUAGE } from "@/constant/apiUrl";
-import { fetchCategoryBySlug } from "@/requests/categories/api";
-import { fetchCityBySlug } from "@/requests/city/api";
 import { fetchCourseDetails } from "@/requests/courses/api";
-import { fetchSpecializationBySlug } from "@/requests/specializations/api";
+import { formatTitleCase } from "@/utils/formatTitleCase";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -26,8 +24,14 @@ export async function generateMetadata({
   const { dynamicThree, dynamicOne, dynamicTwo, dynamicFour } = await params;
 
   const courseData = await fetchCourseDetails({ course_slug: dynamicFour });
-
-  if (!courseData) {
+  const data =
+    !courseData ||
+    courseData?.data?.category_slug !== decodeURIComponent(dynamicThree) ||
+    courseData?.data?.specialization_slug !== decodeURIComponent(dynamicTwo) ||
+    !courseData?.data?.available_cities?.some(
+      (city: any) => city.slug === decodeURIComponent(dynamicOne)
+    );
+  if (data) {
     return LOCALE_LANGUAGE === "en"
       ? {
           title: "Page Not Found",
@@ -40,18 +44,27 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${courseData.data.meta_title || courseData.data.title} `,
+    title: `${courseData.data.meta_title || courseData.data.title}  ${`${
+      LOCALE_LANGUAGE === "en"
+        ? `in ${formatTitleCase(dynamicOne)}`
+        : `في ${decodeURIComponent(dynamicOne)}`
+    }`} `,
     description:
       courseData.data.meta_description ||
       `Learn about ${courseData.data.title}`,
     keywords: courseData.data.meta_keywords || "courses, training, development",
+    robots: {
+      index: false,
+      follow: true,
+    },
     alternates: {
-      canonical: `${DOMAIN_URL}/${dynamicOne}/${dynamicTwo}/${dynamicThree}/${dynamicFour}`,
+      canonical: undefined,
+      // canonical: `${DOMAIN_URL}/${dynamicOne}/${dynamicTwo}/${dynamicThree}/${dynamicFour}`,
     },
     openGraph: {
       title: `${courseData.data.meta_title || courseData.data.title} `,
       description: courseData.data.meta_description,
-      url: `${DOMAIN_URL}/${dynamicOne}/${dynamicTwo}/${dynamicFour}/${dynamicThree}`,
+      url: `${DOMAIN_URL}/${dynamicOne}/${dynamicTwo}/${dynamicThree}/${dynamicFour}`,
       images: [
         {
           url: courseData.data.image || `${DOMAIN_URL}/Logocrown.webp`,
@@ -83,34 +96,38 @@ export default async function DynamicFour({
 }) {
   const { dynamicThree, dynamicOne, dynamicTwo, dynamicFour } = await params;
 
-  const isCategoryValid = await fetchCategoryBySlug({ slug: dynamicThree });
-  const city = await fetchCityBySlug({ slug: dynamicOne });
-  const isSpecializationValid = await fetchSpecializationBySlug({
-    slug: dynamicTwo,
+  const courseData = await fetchCourseDetails({
+    course_slug: decodeURIComponent(dynamicFour),
   });
-
-  if (!isSpecializationValid || !city || !isCategoryValid) {
+  if (
+    !courseData ||
+    courseData?.data?.category_slug !== decodeURIComponent(dynamicThree) ||
+    courseData?.data?.specialization_slug !== decodeURIComponent(dynamicTwo) ||
+    !courseData?.data?.available_cities?.some(
+      (city: any) => city.slug === decodeURIComponent(dynamicOne)
+    )
+  )
     return notFound();
-  }
-  const courseData = await fetchCourseDetails({ course_slug: dynamicFour });
-  if (!courseData) return notFound();
-  
+  console.log(courseData, "courseData");
+  const cityName =
+    LOCALE_LANGUAGE === "en"
+      ? formatTitleCase(dynamicOne)
+      : decodeURIComponent(dynamicOne);
   return (
     <div>
       <HeroSection
         imageUrl={courseData.data.image}
         heading={`${courseData.data.title} ${
-          LOCALE_LANGUAGE === "en" ? "In" : "في"
-        } ${
-          courseData?.data?.available_cities?.find(
-            (c: any) =>
-              decodeURIComponent(c?.slug) === decodeURIComponent(dynamicOne)
-          )?.name
-        }`}
+          LOCALE_LANGUAGE === "en" ? "in" : "في"
+        } ${cityName}`}
       />
 
       <Suspense fallback={<Loading />}>
-        <CourseDetal course={courseData.data} params={dynamicFour} isCity />
+        <CourseDetal
+          course={courseData?.data}
+          params={dynamicThree}
+          isCity={false}
+        />
       </Suspense>
 
       <Blogs />

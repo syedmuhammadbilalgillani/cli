@@ -3,6 +3,7 @@ import Consult_form from "@/components/Consult_form";
 import HeroSection from "@/components/HeroSection";
 import Wrapper from "@/components/Wrapper";
 import { DOMAIN_URL, LOCALE_LANGUAGE } from "@/constant/apiUrl";
+import { TEXT } from "@/constant/text";
 import TranslatedText from "@/lang/TranslatedText";
 import {
   fetchConsultationSubCategoryByCategory,
@@ -52,7 +53,7 @@ interface ServiceSchema {
     }>;
   };
 }
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 60;
 export const dynamicParams = true;
 
@@ -133,50 +134,73 @@ const page = async ({
     slug: category,
   });
 
-  const isEnglish = LOCALE_LANGUAGE === "en";
-
-  const serviceSchema: ServiceSchema = {
+  const jsonLdEN = {
     "@context": "https://schema.org",
     "@type": "Service",
     name: details?.data?.title,
-    description: details?.data?.meta_description || details?.data?.short || "",
+    image: details?.data?.icon,
+    url: `${DOMAIN_URL}/${category}/${service}`,
+    category: details?.data?.category,
+    description: `Consultation service titled '${details?.data?.title}' under ${details?.data?.category} category.`,
     provider: {
       "@type": "Organization",
-      name: "London Crown Institute of Training",
+      name: TEXT.INSTITUTE_NAME,
       url: DOMAIN_URL,
     },
-    areaServed: {
-      "@type": "Country",
-      name: isEnglish ? "United Kingdom" : "المملكة المتحدة",
-    },
-    url: `${DOMAIN_URL}/consulting-services/${category}/${service}`,
-    image: details?.data?.image || `${DOMAIN_URL}/logocrown.webp`,
-    keywords: details?.data?.meta_keywords,
+    serviceType: details?.data?.category,
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: isEnglish ? "Consulting Services" : "الخدمات الاستشارية",
-      itemListElement: [
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: details?.data?.title,
-          },
+      name: "Consulting Date",
+      itemListElement: {
+        "@type": "Offer",
+        availabilityStarts: details?.data?.consulting_date,
+        itemOffered: {
+          "@type": "Service",
+          name: details?.data?.title,
         },
-      ],
+      },
     },
   };
+
+  const jsonLdAR = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "استشارات الذكاء الاصطناعي وتحليل الأعمال", // Replace with actual Arabic title if available
+    image: details?.data?.icon,
+    url: `${DOMAIN_URL}/${category}/${service}`,
+    category: "الذكاء الاصطناعي", // Arabic for "Artificial Intelligence"
+    description: `خدمة استشارية بعنوان '${details?.data?.title}' في فئة ${details?.data?.category}.`,
+    provider: {
+      "@type": "Organization",
+      name: TEXT.INSTITUTE_NAME,
+      url: DOMAIN_URL,
+    },
+    serviceType: details?.data?.category,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "تاريخ الاستشارة",
+      itemListElement: {
+        "@type": "Offer",
+        availabilityStarts: details?.data?.consulting_date,
+        itemOffered: {
+          "@type": "Service",
+          name: details?.data?.title,
+        },
+      },
+    },
+  };
+
+  const selectedSchema = LOCALE_LANGUAGE === "en" ? jsonLdEN : jsonLdAR;
   // console.log(isCategoryExist, "isCategoryExist");
   if (details === null || isCategoryExist === null) return notFound();
 
   return (
     <>
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
-        />
-      </Head>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(selectedSchema) }}
+      />
+
       <div className="overflow-hidden">
         <HeroSection
           parentClassName="md:h-[70dvh] h-[60dvh]"
@@ -192,7 +216,6 @@ const page = async ({
             <div
               dangerouslySetInnerHTML={{ __html: details?.data?.content }}
               suppressHydrationWarning
-              className="text-base text-primary"
             ></div>
           )}
 

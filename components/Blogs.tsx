@@ -13,7 +13,7 @@ const generateBlogSchema = (blogs: any[]) => {
   return {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "Crown London Institute Blog",
+    name: "London Crown Institute of Training Blog",
     url: `${DOMAIN_URL}/blog`,
     blogPost: blogs.map((blog) => ({
       "@type": "BlogPosting",

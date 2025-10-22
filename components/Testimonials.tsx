@@ -14,7 +14,7 @@ const ENtestimonials: TestimonialProps[] = [
     name: "Ahmed Al-Mansoori",
     course: "Project Management Course",
     feedback:
-      "The Project Management course at Crown London Institute was an exceptional experience. The trainers are highly professional, and the content is rich with practical insights. I now feel more confident in managing projects effectively.",
+      "The Project Management course at London Crown Institute of Training was an exceptional experience. The trainers are highly professional, and the content is rich with practical insights. I now feel more confident in managing projects effectively.",
     avatarSrc: "https://github.com/shadcn.png1",
   },
   {
@@ -113,7 +113,7 @@ const Testimonials: React.FC = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="mb-6 gap-6 overflow-hidden rounded-2xl border border-solid border-gray-300 bg-white p-8"
+                  className="mb-6 gap-6 overflow-hidden rounded-2xl border border-solid border-gray-300 bg-white p-8 h-[16rem]"
               >
                 <div className="mb-4 flex flex-row items-center">
                   <Avatar className="text-sm text-primary mr-2">

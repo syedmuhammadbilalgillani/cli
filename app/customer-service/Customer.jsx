@@ -13,7 +13,7 @@ export default function Customer() {
     : "CREATE YOUR TICKET NOW";
   const aboutTicket = isArabic
     ? "هذا نص تجريبي باللغة العربية لتوضيح كيف يمكن للمستخدم إنشاء التذكرة وكتابة تفاصيل المشكلة."
-    : "At Crown London Institute, we're committed to assisting you at every stage. Simply fill out the form below with a brief description of your inquiry, and we'll get back to you promptly.";
+    : "At London Crown Institute of Training, we're committed to assisting you at every stage. Simply fill out the form below with a brief description of your inquiry, and we'll get back to you promptly.";
 
   const namePlaceholder = isArabic ? "الاسم" : "Name";
   const emailPlaceholder = isArabic ? "البريد الإلكتروني" : "Email";
@@ -84,7 +84,7 @@ export default function Customer() {
         <title>Customer Service - London Crown Institute of Training</title>
         <meta
           name="description"
-          content="At Crown London Institute, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
+          content="At London Crown Institute of Training, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
         />
         <meta
           property="og:title"
@@ -92,7 +92,7 @@ export default function Customer() {
         />
         <meta
           property="og:description"
-          content="At Crown London Institute, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
+          content="At London Crown Institute of Training, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
         />
         {/* Add more meta tags as needed */}
       </Head>

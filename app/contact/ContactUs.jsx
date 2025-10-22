@@ -80,7 +80,7 @@ export default function ContactPage() {
         <title>Contact Us - London Crown Institute of Training</title>
         <meta
           name="description"
-          content="At Crown London Institute, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
+          content="At London Crown Institute of Training, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
         />
         <meta
           property="og:title"
@@ -88,7 +88,7 @@ export default function ContactPage() {
         />
         <meta
           property="og:description"
-          content="At Crown London Institute, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
+          content="At London Crown Institute of Training, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
         />
       </Head> */}
       {/* <Design secondary bg></Design> */}

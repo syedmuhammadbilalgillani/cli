@@ -18,6 +18,8 @@ import HeroSection from "./HeroSection";
 import Loading from "./Loading";
 import Pagination from "./Pagination";
 import SectionTitle from "./SectionTitle";
+import { LOCALE_LANGUAGE } from "@/constant/apiUrl";
+import { formatTitleCase } from "@/utils/formatTitleCase";
 
 // Interfaces
 interface City {
@@ -65,6 +67,8 @@ interface SpecializationProps {
   specialization: any;
   city?: boolean;
   paramsTwo?: string;
+  cityPath?: boolean;
+  cityParams?: string;
 }
 
 interface CategoryListingProps {
@@ -80,6 +84,8 @@ const Specialization: React.FC<SpecializationProps> = ({
   specialization,
   city,
   paramsTwo,
+  cityPath = false,
+  cityParams,
 }) => {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -177,128 +183,11 @@ const Specialization: React.FC<SpecializationProps> = ({
     }
   }, []);
 
-  //   const englishJsonLdData = {
-  //     "@context": "https://schema.org",
-  //     "@type": "ItemList",
-  //     itemListElement: (filteredCourses || []).map((course, index) => ({
-  //       "@type": "ListItem",
-  //       position: index + 1,
-  //       item: {
-  //         "@type": "Categories",
-  //         name: course?.title || "Unnamed Course",
-  //         description: course?.summary || "No description available.",
-  //         category: course?.category || "Training",
-  //         url: `https://clinstitute.co.uk/${params || "default-category"}/${
-  //           course?.available_cities?.[0]?.specialization || "default-city"
-  //         }/${course?.specialization || "default-course"}`,
-  //         provider: {
-  //           "@type": "Organization",
-  //           name: "London Crown Institute of Training",
-  //           sameAs: "https://clinstitute.co.uk/",
-  //         },
-  //         image: {
-  //           "@type": "ImageObject",
-  //           url:
-  //             course?.image ||
-  //             "https://clinstitute.co.uk/default-course-image.webp",
-  //         },
-  //         hasCourseInstance: {
-  //           "@type": "CourseInstance",
-  //           courseMode: "Onsite",
-  //           courseWorkload: "PT22H",
-  //           courseSchedule: {
-  //             "@type": "Schedule",
-  //             duration: "P1W",
-  //             repeatCount: "1",
-  //             repeatFrequency: "Weekly",
-  //           },
-  //           location: {
-  //             "@type": "Place",
-  //             name:
-  //               course?.available_cities?.length > 0
-  //                 ? course.available_cities.map((city) => city.name).join(", ")
-  //                 : "Default City",
-  //           },
-  //         },
-  //         offers: {
-  //           "@type": "Offer",
-  //           category: "Paid",
-  //           price: course?.price || "3000",
-  //           priceCurrency: "GBP",
-  //           availability: "https://schema.org/InStock",
-  //           validFrom:
-  //             (course?.available_dates?.length > 0 &&
-  //               course?.available_dates[0]?.date) ||
-  //             "2025-01-01",
-  //         },
-  //       },
-  //     })),
-  //   };
-
-  //   const arabicJsonLdData = {
-  //     "@context": "https://schema.org",
-  //     "@type": "ItemList",
-  //     itemListElement: (filteredCourses || []).map((course, index) => ({
-  //       "@type": "ListItem",
-  //       position: index + 1,
-  //       item: {
-  //         "@type": "Categories",
-  //         name: course?.arabic_title || "دورة بدون اسم",
-  //         description: course?.arabic_summary || "لا يوجد وصف.",
-  //         category: course?.arabic_category || "تدريب",
-  //         url: `https://ar.clinstitute.co.uk/${params || "default-category"}/${
-  //           course?.available_cities?.[0]?.specialization || "default-city"
-  //         }/${course?.specialization || "default-course"}`,
-  //         provider: {
-  //           "@type": "Organization",
-  //           name: "معهد التاج للتدريب - لندن",
-  //           sameAs: "https://ar.clinstitute.co.uk/",
-  //         },
-  //         image: {
-  //           "@type": "ImageObject",
-  //           url:
-  //             course?.image ||
-  //             "https://ar.clinstitute.co.uk/default-course-image.webp",
-  //         },
-  //         hasCourseInstance: {
-  //           "@type": "CourseInstance",
-  //           courseMode: "حضوري",
-  //           courseWorkload: "٢٢ ساعة",
-  //           courseSchedule: {
-  //             "@type": "Schedule",
-  //             duration: "P1W",
-  //             repeatCount: "1",
-  //             repeatFrequency: "أسبوعيًا",
-  //           },
-  //           location: {
-  //             "@type": "Place",
-  //             name:
-  //               course?.available_cities?.length > 0
-  //                 ? course.available_cities
-  //                     .map((city) => city.arabic_name || city.name)
-  //                     .join("، ")
-  //                 : "المدينة الافتراضية",
-  //           },
-  //         },
-  //         offers: {
-  //           "@type": "Offer",
-  //           category: "مدفوع",
-  //           price: course?.price || "3000",
-  //           priceCurrency: "GBP",
-  //           availability: "https://schema.org/InStock",
-  //           validFrom:
-  //             (course?.available_dates?.length > 0 &&
-  //               course?.available_dates[0]?.date) ||
-  //             "2025-01-01",
-  //         },
-  //       },
-  //     })),
-  //   };
-
-  //   const jsonLdData =
-  //     LOCALE_LANGUAGE === "ar" ? arabicJsonLdData : englishJsonLdData;
-
-  if (data?.data?.length === 0) return <div>Not Found</div>;
+  const cityName =
+    cityPath && LOCALE_LANGUAGE === "en"
+      ? `in ${formatTitleCase(cityParams)}`
+      : `في ${cityParams}`;
+  // if (data?.data?.length === 0) return <div>Not Found</div>;
 
   const [firstWord, secondWord, ...remainingWords] =
     specialization?.data?.name.split(" ");
@@ -317,7 +206,7 @@ const Specialization: React.FC<SpecializationProps> = ({
         contentClassName="px-5 bottom-[5%]"
         imageUrl={"/image_consult.png"}
         heading={firstPart ?? ""}
-        highlight={secondPart ?? ""}
+        localhighlight={`${secondPart ?? ""} ${cityPath ? cityName : ""}`}
       />
 
       <div className="mt-6">
@@ -350,13 +239,13 @@ const Specialization: React.FC<SpecializationProps> = ({
             {specialization?.data?.name}
           </h2>
 
-          <p
-            className="mt-2 text-sm text-gray-600  line-clamp-3"
+          <div
+            className="mt-2"
             suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: specialization?.data?.description ?? undefined,
             }}
-          ></p>
+          ></div>
         </div>
       )}
 

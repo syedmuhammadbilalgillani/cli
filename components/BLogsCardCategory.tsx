@@ -17,25 +17,25 @@ interface Props {
 const BLogsCardCategory: React.FC<Props> = ({ index, list }) => {
   return (
     <div key={index}>
-      <Link href={`/blog/${list.slug}`}>
+      <Link href={`/blog/${list?.slug}`}>
         <div className="rounded-lg p-2 bg-white text-primary transform scale-100 transition-transform duration-300 hover:scale-105 w-[280px] min-h-[300px]">
           <div className="p-2 border-[1px] shadow-lg border-[#bfbfbf] rounded-lg">
             <div className="relative overflow-hidden w-full h-[150px]">
               <Image
-                src={list.image}
-                alt={list.name}
+                src={list?.image}
+                alt={list?.name}
                 fill
                 style={{ objectFit: "cover" }}
                 className="rounded-md"
                 priority
               />
               <div className="absolute top-3 right-3 bg-[#efefef] px-5 py-1 text-xs rounded-full shadow-lg opacity-80">
-                {list.number_of_blogs}
+                {list?.number_of_blogs}
               </div>
             </div>
             <div className="flex flex-col gap-4 justify-center mt-1">
               <h2 className="text-center line-clamp-2 text-[1rem] text-primary py-2">
-                {list.name}
+                {list?.name}
               </h2>
             </div>
             <div className="flex justify-center">

@@ -53,6 +53,7 @@ const Filteration = ({ data }) => {
       handleSearch();
     }
   };
+  // console.log(filtered, "filtered");
   const seoSchema = {
     "@context": "https://schema.org",
     "@type": "ConsultationItemList",
@@ -65,7 +66,7 @@ const Filteration = ({ data }) => {
       description: service?.description,
     })),
   };
-  console.log(filtered,'filtered')
+  // console.log(filtered, "filtered");
   return (
     <>
       <script

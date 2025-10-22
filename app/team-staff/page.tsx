@@ -133,7 +133,7 @@ export default page;
 //         <title>Team Staff - London Crown Institute of Training</title>
 //         <meta
 //           name="description"
-//           content="At Crown London Institute, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
+//           content="At London Crown Institute of Training, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
 //         />
 //         <meta
 //           property="og:title"
@@ -141,7 +141,7 @@ export default page;
 //         />
 //         <meta
 //           property="og:description"
-//           content="At Crown London Institute, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
+//           content="At London Crown Institute of Training, we're committed to assisting you at every stage. Fill out the form to contact us with any inquiries about our courses or services."
 //         />
 //         {/* Add more meta tags as needed */}
 //       </Head>

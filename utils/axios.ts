@@ -9,18 +9,20 @@ import axios, {
 const getCsrfToken = (): string | null => {
   try {
     if (typeof document === "undefined") return null;
-    const metaElement = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;
+    const metaElement = document.querySelector(
+      'meta[name="csrf-token"]'
+    ) as HTMLMetaElement | null;
     return metaElement?.content || null;
   } catch (error) {
-    console.log("Failed to retrieve CSRF token:", error);
+    // console.log("Failed to retrieve CSRF token:", error);
     return null;
   }
 };
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-let lastRequestTime = 0;
-const MIN_DELAY_MS = 1000; // 1 second
+// 🔹 Global counter (for tracking API usage)
+let requestCount = 0;
+let lastRequestTime = Date.now();
+const RESET_TIMEOUT = 60000; // 1 minute in milliseconds
 
 const createAxiosInstance = (): AxiosInstance => {
   const csrfToken = getCsrfToken();
@@ -38,32 +40,50 @@ const createAxiosInstance = (): AxiosInstance => {
     },
   });
 
-  // ✅ Correctly typed request interceptor
+  // ✅ Request interceptor (no delay)
   instance.interceptors.request.use(
-    async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
-      const now = Date.now();
-      const waitTime = MIN_DELAY_MS - (now - lastRequestTime);
+    (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+      const currentTime = Date.now();
 
-      if (waitTime > 0) {
-        await delay(waitTime);
+      // Reset counter if more than 1 minute has passed since last request
+      if (currentTime - lastRequestTime > RESET_TIMEOUT) {
+        requestCount = 0;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("apiRequestCount", "0");
+        }
+        // console.log("Request counter reset after 1 minute of inactivity");
       }
 
-      lastRequestTime = Date.now();
+      lastRequestTime = currentTime;
+      requestCount++;
+      console.log(
+        `API Request #${requestCount}:`,
+        config.method?.toUpperCase(),
+        config.url
+      );
+
+      // Optional: persist count and last request time in localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("apiRequestCount", requestCount.toString());
+        localStorage.setItem("lastRequestTime", lastRequestTime.toString());
+      }
+
       return config;
     },
     (error) => Promise.reject(error)
   );
 
+  // ✅ Response interceptor
   instance.interceptors.response.use(
     (response) => response,
     (error: AxiosError) => {
-      console.log("Axios request failed:", {
-        url: error.config?.url,
-        method: error.config?.method,
-        status: error.response?.status,
-        message: error.message,
-        responseData: error.response?.data,
-      });
+      // console.log("Axios request failed:", {
+      //   url: error.config?.url,
+      //   method: error.config?.method,
+      //   status: error.response?.status,
+      //   message: error.message,
+      //   responseData: error.response?.data,
+      // });
       return Promise.reject(error);
     }
   );
@@ -73,7 +93,6 @@ const createAxiosInstance = (): AxiosInstance => {
 
 const axiosInstance = createAxiosInstance();
 export default axiosInstance;
-
 
 // // utils/axiosInstance.ts
 // import { BACKEND_URL, LOCALE_LANGUAGE } from "@/constant/apiUrl";
@@ -86,7 +105,7 @@ export default axiosInstance;
 //     const metaElement = document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null;
 //     return metaElement?.content || null;
 //   } catch (error) {
-//     console.log("Failed to retrieve CSRF token:", error);
+// console.log("Failed to retrieve CSRF token:", error);
 //     return null;
 //   }
 // };
@@ -112,7 +131,7 @@ export default axiosInstance;
 //   instance.interceptors.response.use(
 //     (response) => response,
 //     (error: AxiosError) => {
-//       console.log("Axios request failed:", {
+// console.log("Axios request failed:", {
 //         url: error.config?.url,
 //         method: error.config?.method,
 //         status: error.response?.status,

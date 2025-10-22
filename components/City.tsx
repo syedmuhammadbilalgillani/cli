@@ -9,9 +9,9 @@ import React, { useEffect, useState } from "react";
 import { LOCALE_LANGUAGE } from "@/constant/apiUrl";
 
 import { fetchCoursesByCityWithPagination } from "@/requests/courses/api";
+import { formatTitleCase } from "@/utils/formatTitleCase";
 import CourseListing from "./ItemList";
 import Loading from "./Loading";
-import Notes from "./Notes";
 import Pagination from "./Pagination";
 import { Card, CardContent } from "./ui/card";
 
@@ -53,6 +53,7 @@ interface CityProps {
     data: Category[];
   };
   check_city_courses: boolean;
+  hideDropdown?: boolean;
 }
 interface QueryParams {
   page: string;
@@ -65,6 +66,7 @@ const City: React.FC<CityProps> = ({
   city,
   category,
   check_city_courses,
+  hideDropdown = false,
 }) => {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -188,12 +190,23 @@ const City: React.FC<CityProps> = ({
           position: index + 1,
           item: {
             "@type": "Course",
-            name: isArabic ? course.title : course.title || "Unnamed Course",
+            name:
+              `${course?.title}${
+                check_city_courses
+                  ? ` ${
+                      LOCALE_LANGUAGE === "ar"
+                        ? `في ${decodeURIComponent(params??"")}`
+                        : `in ${formatTitleCase(params)}`
+                    }`
+                  : ""
+              }` || "",
             description: isArabic
               ? course.meta_description
               : course.meta_description || "No description available.",
             url: `https://${isArabic ? "ar." : ""}clinstitute.co.uk/${params}/${
               course.specialization_slug
+            }/${
+              course.category_slug
             }/${course.slug}`,
             image: {
               "@type": "ImageObject",
@@ -287,6 +300,7 @@ const City: React.FC<CityProps> = ({
             check_city_courses={check_city_courses}
             filteredCourses={filteredCourses}
             // cities_={cities}
+            hideDropdown={hideDropdown}
             params={params}
           />
         )}
@@ -307,7 +321,7 @@ const City: React.FC<CityProps> = ({
           </h2>
 
           <p
-            className="mt-2 text-sm text-gray-600"
+            className="mt-2"
             suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: city?.data?.description ?? undefined,

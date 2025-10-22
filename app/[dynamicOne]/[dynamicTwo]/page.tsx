@@ -9,6 +9,7 @@ import { fetchCityBySlug } from "@/requests/city/api";
 import { fetchCoursesByCategoryWithPagination } from "@/requests/courses/api";
 import { fetchSpecializationBySlug } from "@/requests/specializations/api";
 import { formatSlug } from "@/utils/formatSlug";
+import { formatTitleCase } from "@/utils/formatTitleCase";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -42,9 +43,20 @@ export async function generateMetadata({
     }
 
     const formattedLocation = formatSlug(dynamicTwo);
-    const title = `${data.meta_title}` || "London Crown Institute of Training";
+    let title;
 
-    console.log(`Generated metadata title: ${title}`);
+    // Check if data comes from categoryData
+    if (categoryData?.data && data === categoryData.data) {
+      title = `${data.meta_title} `;
+    } else {
+      title = `${data.meta_title}  ${`${
+        LOCALE_LANGUAGE === "en"
+          ? `in ${formatTitleCase(dynamicOne)}`
+          : `في ${decodeURIComponent(dynamicOne)}`
+      }`}`;
+    }
+
+    title = title || "London Crown Institute of Training";
 
     return {
       title,
@@ -102,79 +114,74 @@ export default async function DynamicOne({
 }) {
   const { dynamicOne, dynamicTwo } = await params;
 
-  // Step 1: Validate dynamicOne first
-  let city = null;
   let specialization = null;
-
+  let category = null;
   try {
-    [city, specialization] = await Promise.all([
-      fetchCityBySlug({ slug: dynamicOne }),
-      fetchSpecializationBySlug({ slug: dynamicOne }),
+    [category, specialization] = await Promise.all([
+      fetchCategoryBySlug({ slug: dynamicTwo }),
+      fetchSpecializationBySlug({ slug: dynamicTwo }),
     ]);
   } catch (error) {
     console.error("Error validating dynamicOne", error);
   }
   console.log(specialization, "specialization");
   // If none of the slugs from dynamicOne are valid, return NotFound
-  if (!city && !specialization) {
+  if (!category && !specialization) {
     return notFound();
   }
-
-  // Step 2: Fetch data related to dynamicTwo
   let specializationCategoriesAfterValidation = null;
-  let categoryDetails = null;
   let coursesByCategories = null;
 
-  try {
-    // Only fetch relevant data based on what was found in dynamicOne
-    const results = await Promise.all([
-      city ? fetchSpecializationBySlug({ slug: dynamicTwo }) : null,
-      city ? fetchCategoryBySpecialization({ slug: dynamicTwo }) : null,
-      specialization ? fetchCategoryBySlug({ slug: dynamicTwo }) : null,
-      specialization
-        ? fetchCoursesByCategoryWithPagination({
-            category_slug: dynamicTwo,
-            per_page: (await searchParams).per_page ?? 50,
-            page: (await searchParams).page ?? 1,
-          })
-        : null,
-    ]);
+  if (category) {
+    if (
+      category?.data?.specialization_slug !== decodeURIComponent(dynamicOne)
+    ) {
+      return notFound();
+    }
+    coursesByCategories = await fetchCoursesByCategoryWithPagination({
+      category_slug: dynamicTwo,
+      per_page: (await searchParams).per_page ?? 50,
+      page: (await searchParams).page ?? 1,
+    });
+    if (!coursesByCategories) {
+      return notFound();
+    }
+  } else if (specialization) {
+    const checkCity = await fetchCityBySlug({ slug: dynamicOne });
+    if (!checkCity) {
+      return notFound();
+    }
 
-    // Overwrite city/program/specialization if dynamicTwo represents one
-
-    if (results[0]) specialization = results[0];
-    if (results[1]) specializationCategoriesAfterValidation = results[1];
-    if (results[2]) categoryDetails = results[2];
-    if (results[3]) coursesByCategories = results[3];
-  } catch (error) {
-    // console.error("Error fetching dynamicTwo data", error);
+    specializationCategoriesAfterValidation =
+      await fetchCategoryBySpecialization({ slug: dynamicTwo });
+    if (!specializationCategoriesAfterValidation) {
+      return notFound();
+    }
   }
-  // console.log(
-  //   categoryDetails,
-  //   "categoryDetails",
-  //   coursesByCategories,
-  //   "coursesByCategories"
-  // );
-  if (!specializationCategoriesAfterValidation && !coursesByCategories)
-    return notFound();
-  // Final rendering logic
+
   return (
     <>
       {specializationCategoriesAfterValidation ? (
         <Specialization
           data={specializationCategoriesAfterValidation}
-          params={dynamicOne}
-          paramsTwo={dynamicTwo}
+          params={decodeURIComponent(dynamicOne)}
+          paramsTwo={decodeURIComponent(dynamicTwo)}
           city={true}
           specialization={specialization}
+          cityPath={true}
+          cityParams={
+            LOCALE_LANGUAGE === "en"
+              ? dynamicOne
+              : decodeURIComponent(dynamicOne)
+          }
         />
       ) : (
         <>
           <Category
             course={coursesByCategories}
-            categoryDetail={categoryDetails}
-            params={dynamicTwo}
-            cityParams={dynamicOne}
+            categoryDetail={category}
+            params={decodeURIComponent(dynamicTwo)}
+            cityParams={decodeURIComponent(dynamicOne)}
           />
         </>
       )}

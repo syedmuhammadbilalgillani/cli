@@ -61,7 +61,7 @@ const CategoryFilteration = ({ data, slug }) => {
     itemListElement: filtered?.map((service, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `${DOMAIN_URL}/consulting-services/${service?.slug}`,
+      url: `${DOMAIN_URL}/consulting-services/${slug}/${service?.slug}`,
       name: service?.name,
       description: service?.description,
     })),
@@ -113,7 +113,7 @@ const CategoryFilteration = ({ data, slug }) => {
             ))
           ) : (
             <div className="col-span-full flex justify-center items-center">
-              <TranslatedText textKey="table.noData"/>
+              <TranslatedText textKey="table.noData" />
             </div>
           )}
         </div>

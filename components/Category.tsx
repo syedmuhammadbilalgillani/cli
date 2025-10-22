@@ -20,6 +20,8 @@ import {
   fetchCoursesByCategoryWithPagination,
 } from "@/requests/courses/api";
 import Loading from "./Loading";
+import { formatTitleCase } from "@/utils/formatTitleCase";
+import { TEXT } from "@/constant/text";
 
 interface CategoryProps {
   course: any;
@@ -44,11 +46,9 @@ const Category: React.FC<CategoryProps> = ({
     Number(searchParams.get("page")) || 1
   );
   const [coursedata, setCourseData] = useState<any>(course ?? { data: [] });
-  const [filteredCourses, setFilteredCourses] = useState<any[]>(
-    course?.data || []
-  );
+  const [filteredCourses, setFilteredCourses] = useState(course?.data || []);
   const PER_PAGE = 50;
-  console.log(categoryDetail, "categoryDetails");
+  // console.log(categoryDetail, "categoryDetails");
 
   // Update URL without triggering API calls
   const updateURL = (params: Record<string, string>): void => {
@@ -131,31 +131,49 @@ const Category: React.FC<CategoryProps> = ({
       handleSearch();
     }
   }, []);
+  // console.log(filteredCourses, "filteredCourses");
+  const courses = cityPath
+    ? filteredCourses?.filter((data: any) =>
+        data?.available_cities.some((city: any) => city?.slug === cityParams)
+      )
+    : filteredCourses;
+  // console.log(courses, "courses");
+
   const jsonLdData =
     LOCALE_LANGUAGE === "ar"
       ? {
           "@context": "https://schema.org",
           "@type": "ItemList",
-          itemListElement: (filteredCourses || []).map((course, index) => ({
+          itemListElement: (courses || []).map((course: any, index: any) => ({
             "@type": "ListItem",
             position: index + 1,
             item: {
               "@type": "Course",
-              name: course?.arabic_title || "دورة بدون اسم",
-              description: course?.arabic_summary || "لا يوجد وصف.",
-              category: course?.arabic_category || "تدريب",
-              url: `${AR_DOMAIN_URL}${
-                cityParams !== "" && `/${cityParams}`
-              }/${params}/${course?.slug || "default-course"}`,
+              name:
+                `${course?.title}${
+                  cityPath
+                    ? ` ${
+                        LOCALE_LANGUAGE === "ar"
+                          ? `في ${cityParams}`
+                          : `in ${formatTitleCase(cityParams)}`
+                      }`
+                    : ""
+                }` || "دورة بدون اسم",
+              description: course?.meta_description || "لا يوجد وصف.",
+              category: course?.category || "تدريب",
+              url: cityPath
+                ? `${DOMAIN_URL}${cityParams !== "" && `/${cityParams}`}/${
+                    course?.specialization_slug
+                  }/${course?.category_slug}`
+                : `${DOMAIN_URL}/${course?.specialization_slug}/${course?.category_slug}`,
               provider: {
                 "@type": "Organization",
-                name: "معهد التاج للتدريب - لندن",
-                sameAs: "https://clinstitute.co.uk/",
+                name: TEXT.INSTITUTE_NAME,
+                sameAs: `${AR_DOMAIN_URL}`,
               },
               image: {
                 "@type": "ImageObject",
-                url:
-                  course?.image || "https://clinstitute.co.uk/Logocrown.webp",
+                url: course?.image || `${AR_DOMAIN_URL}Logocrown.webp`,
               },
               hasCourseInstance: {
                 "@type": "CourseInstance",
@@ -169,12 +187,13 @@ const Category: React.FC<CategoryProps> = ({
                 },
                 location: {
                   "@type": "Place",
-                  name:
-                    course?.available_cities?.length > 0
-                      ? course.available_cities
-                          .map((city: any) => city.arabic_name || city.name)
-                          .join("، ")
-                      : "المدينة الافتراضية",
+                  name: cityPath
+                    ? cityParams
+                    : course?.available_cities?.length > 0
+                    ? course.available_cities
+                        .map((city: any) => city.name || city.name)
+                        .join("، ")
+                    : "المدينة الافتراضية",
                 },
               },
               offers: {
@@ -191,26 +210,38 @@ const Category: React.FC<CategoryProps> = ({
       : {
           "@context": "https://schema.org",
           "@type": "ItemList",
-          itemListElement: (filteredCourses || []).map((course, index) => ({
+          itemListElement: (courses || []).map((course: any, index: any) => ({
             "@type": "ListItem",
             position: index + 1,
             item: {
               "@type": "Course",
-              name: course?.title || "Untitled Course",
-              description: course?.summary || "No description available.",
+              name:
+                `${course?.title}${
+                  cityPath
+                    ? ` ${
+                        LOCALE_LANGUAGE === "en"
+                          ? `in ${formatTitleCase(cityParams)}`
+                          : `في ${cityParams}`
+                      }`
+                    : ""
+                }` || "Untitled Course",
+
+              description:
+                course?.meta_description || "No description available.",
               category: course?.category || "Training",
-              url: `${EN_DOMAIN_URL}${
-                cityParams !== "" && `/${cityParams}`
-              }/${params}/${course?.slug || "default-course"}`,
+              url: cityPath
+                ? `${DOMAIN_URL}${cityParams !== "" && `/${cityParams}`}/${
+                    course?.specialization_slug
+                  }/${course?.category_slug}`
+                : `${DOMAIN_URL}/${course?.specialization_slug}/${course?.category_slug}`,
               provider: {
                 "@type": "Organization",
-                name: "Crown Institute of Training - London",
-                sameAs: "https://clinstitute.co.uk/",
+                name: TEXT.INSTITUTE_NAME,
+                sameAs: `${DOMAIN_URL}`,
               },
               image: {
                 "@type": "ImageObject",
-                url:
-                  course?.image || "https://clinstitute.co.uk/Logocrown.webp",
+                url: course?.image || `${DOMAIN_URL}Logocrown.webp`,
               },
               hasCourseInstance: {
                 "@type": "CourseInstance",
@@ -224,12 +255,13 @@ const Category: React.FC<CategoryProps> = ({
                 },
                 location: {
                   "@type": "Place",
-                  name:
-                    course?.available_cities?.length > 0
-                      ? course.available_cities
-                          .map((city: any) => city.name || city.arabic_name)
-                          .join(", ")
-                      : "Default City",
+                  name: cityPath
+                    ? cityParams
+                    : course?.available_cities?.length > 0
+                    ? course.available_cities
+                        .map((city: any) => city.name || city.name)
+                        .join(", ")
+                    : "Default City",
                 },
               },
               offers: {
@@ -243,11 +275,20 @@ const Category: React.FC<CategoryProps> = ({
             },
           })),
         };
-  const [firstWord, secondWord, ...remainingWords] =
-    categoryDetail?.data?.name.split(" ");
-  const firstPart = [firstWord, secondWord].filter(Boolean).join(" ");
-  const secondPart = remainingWords.join(" ");
+  let firstPart = "";
+  let secondPart = "";
+
+  if (categoryDetail?.data?.name) {
+    const [firstWord, secondWord, ...remainingWords] =
+      categoryDetail?.data?.name?.split(" ");
+    firstPart = [firstWord, secondWord].filter(Boolean).join(" ");
+    secondPart = remainingWords.join(" ");
+  }
   // console.log(filteredCourses, "flter course");
+  const cityName =
+    LOCALE_LANGUAGE === "en"
+      ? `in ${formatTitleCase(cityParams)}`
+      : `في ${cityParams}`;
   return (
     <>
       <script
@@ -260,9 +301,7 @@ const Category: React.FC<CategoryProps> = ({
         imageUrl="/image_consult.png"
         contentClassName="px-5 bottom-[5%]"
         heading={firstPart}
-        highlight={`${secondPart} ${
-          LOCALE_LANGUAGE === "en" ? "In" : "في"
-        } ${cityParams}`}
+        localhighlight={`${secondPart} ${cityPath ? cityName : ""}`}
       />
 
       <div className="mt-6">
@@ -271,7 +310,7 @@ const Category: React.FC<CategoryProps> = ({
         ) : (
           <CourseListing
             check_city_courses={cityPath}
-            filteredCourses={filteredCourses ?? []}
+            filteredCourses={courses ?? []}
             params={cityParams}
             hideDropdown={hideDropdown}
           />
@@ -292,13 +331,13 @@ const Category: React.FC<CategoryProps> = ({
             {categoryDetail?.data?.name}
           </h2>
 
-          <p
-            className="mt-2 text-sm text-gray-600  line-clamp-3"
+          <div
+            className="mt-2"
             suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: categoryDetail?.data?.description ?? undefined,
             }}
-          ></p>
+          ></div>
         </div>
       )}
 

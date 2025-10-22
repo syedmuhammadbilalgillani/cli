@@ -12,6 +12,7 @@ import {
 } from "@/requests/courses/api";
 import { fetchSpecializationBySlug } from "@/requests/specializations/api";
 import { formatSlug } from "@/utils/formatSlug";
+import { formatTitleCase } from "@/utils/formatTitleCase";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -52,11 +53,28 @@ export async function generateMetadata({
     }
 
     const formattedLocation = formatSlug(dynamicTwo);
-    const title =
-      `${data?.meta_title} ` ||
-      (isArabic
-        ? "معهد لندن كراون للتدريب"
-        : "London Crown Institute of Training");
+
+    let title;
+
+    // Check if data comes from categoryData.data
+    if (categoryData?.data && data === categoryData.data) {
+      // Add additional text for category data
+      title =
+        `${data?.meta_title} ${`${
+          LOCALE_LANGUAGE === "en"
+            ? `in ${formatTitleCase(dynamicOne)}`
+            : `في ${decodeURIComponent(dynamicOne)}`
+        }`}` ||
+        (isArabic
+          ? "معهد لندن كراون للتدريب"
+          : "London Crown Institute of Training");
+    } else {
+      title =
+        `${data?.meta_title}` ||
+        (isArabic
+          ? "معهد لندن كراون للتدريب"
+          : "London Crown Institute of Training");
+    }
 
     console.log(`Generated metadata title: ${title}`);
 
@@ -82,7 +100,7 @@ export async function generateMetadata({
           (isArabic
             ? "اكتشف برامج التدريب والدورات التدريبية المتميزة."
             : "Explore top-notch training programs and courses."),
-        url: `${DOMAIN_URL}/${dynamicOne}/${dynamicTwo}`,
+        url: `${DOMAIN_URL}/${dynamicOne}/${dynamicTwo}/${dynamicThree}`,
         images: [
           {
             url: data.image || `${DOMAIN_URL}/Logocrown.webp`,
@@ -136,107 +154,115 @@ export default async function DynamicThree({
   console.log("Fetching dynamic parameters...");
   const { dynamicOne, dynamicTwo, dynamicThree } = await params;
 
-  console.log(
-    `Received dynamic slugs: dynamicOne=${dynamicOne}, dynamicTwo=${dynamicTwo}, dynamicThree=${dynamicThree}`
-  );
-
-  // Step 1: Validate dynamicOne first
-  let city = null;
-  let specialization = null;
-
-  try {
-    console.log("Validating dynamicOne...");
-    [city, specialization] = await Promise.all([
-      fetchCityBySlug({ slug: dynamicOne }),
-      fetchSpecializationBySlug({ slug: dynamicOne }),
-    ]);
-    console.log(
-      `Validated dynamicOne: city=${city}, specialization=${specialization}`
-    );
-  } catch (error) {
-    console.error("Error validating dynamicOne", error);
-  }
-
-  let isSpecialExist = null;
-  let isCategoryExist = null;
-
-  try {
-    console.log("Validating dynamicTwo...");
-    [isSpecialExist, isCategoryExist] = await Promise.all([
-      fetchSpecializationBySlug({ slug: dynamicTwo }),
-      fetchCategoryBySlug({ slug: dynamicTwo }),
-    ]);
-    console.log(
-      `Validated dynamicTwo: isSpecialExist=${isSpecialExist}, isCategoryExist=${isCategoryExist}`
-    );
-  } catch (error) {
-    console.error("Error validating dynamicTwo", error);
-  }
-
-  // If none of the slugs from dynamicOne are valid, return NotFound
-  if (!city && !specialization) {
-    console.log(
-      "Neither city nor specialization found for dynamicOne, returning NotFound."
-    );
-    return notFound();
-  }
-
-  // If neither specialization nor category exists for dynamicTwo, return NotFound
-  if (!isSpecialExist && !isCategoryExist) {
-    console.log(
-      "Neither specialization nor category found for dynamicTwo, returning NotFound."
-    );
-    return notFound();
-  }
-
-  const isExistOne = specialization && isCategoryExist;
-  const isExistTwo = city && isSpecialExist;
   let courseDetails = null;
-
-  // Step 2: Fetch data related to dynamicTwo
   let specializationCategoriesAfterValidation = null;
   let categoryDetails = null;
   let coursesByCategories = null;
+  // const checkCity = await fetchCityBySlug({ slug: dynamicOne });
 
+  // console.log(checkCity, "check city");
+  // if (!checkCity) {
+  //   return notFound();
+  // }
   try {
     console.log("Fetching related data based on dynamicOne and dynamicTwo...");
     const results = await Promise.all([
-      isExistOne ? fetchCourseDetails({ course_slug: dynamicThree }) : null,
-      isExistTwo
-        ? fetchCoursesByCategoryWithPagination({ category_slug: dynamicThree })
-        : null,
-      isExistTwo ? fetchCategoryBySlug({ slug: dynamicThree }) : null,
-      // specialization
-      //   ? fetchCoursesByCategoryWithPagination({
-      //       category_slug: dynamicTwo,
-      //       per_page: (await searchParams).per_page ?? 50,
-      //       page: (await searchParams).page ?? 1,
-      //     })
-      //   : null,
+      fetchCourseDetails({ course_slug: decodeURIComponent(dynamicThree) }),
+      fetchCoursesByCategoryWithPagination({
+        category_slug: decodeURIComponent(dynamicThree),
+      }),
+      fetchCategoryBySlug({ slug: decodeURIComponent(dynamicThree) }),
     ]);
-
-    console.log("Fetched results:", results);
 
     if (results[0]) courseDetails = results[0];
     if (results[1]) coursesByCategories = results[1];
     if (results[2]) categoryDetails = results[2];
-    // if (results[3]) coursesByCategories = results[3];
   } catch (error) {
     console.error("Error fetching dynamicTwo data", error);
   }
 
-  // Debug logs for fetched data
-  console.log("courseDetails:", courseDetails);
-  console.log("specializationCategoriesAfterValidation:", coursesByCategories);
+  const checkCity = await fetchCityBySlug({ slug: dynamicOne });
+  if (courseDetails) {
+    console.log("=== Course Details Validation Start ===");
+    console.log("Course details found:", {
+      courseSlug: courseDetails?.data?.slug,
+      categorySlug: courseDetails?.data?.category_slug,
+      expectedCategorySlug: dynamicTwo,
+      specializationSlug: courseDetails?.data?.specialization_slug,
+      expectedSpecializationSlug: dynamicOne,
+    });
 
-  if (!courseDetails && !coursesByCategories && !categoryDetails) {
-    console.log(
-      "No course details or specialization categories found, returning NotFound."
-    );
+    // console.log(checkCity, "check city");
+    // if (!checkCity) {
+    //   return notFound();
+    // }
+    if (
+      !courseDetails ||
+      courseDetails?.data?.category_slug !== decodeURIComponent(dynamicTwo) ||
+      courseDetails?.data?.specialization_slug !==
+        decodeURIComponent(dynamicOne)
+    ) {
+      console.log("=== Course Validation Failed ===");
+      console.log("Validation Details:", {
+        hasCourseDetails: !!courseDetails,
+        categoryMatch: courseDetails?.data?.category_slug === dynamicTwo,
+        specializationMatch:
+          courseDetails?.data?.specialization_slug === dynamicOne,
+        courseData: courseDetails?.data,
+        dynamicParams: {
+          dynamicOne,
+          dynamicTwo,
+          dynamicThree,
+        },
+      });
+      return notFound();
+    }
+
+    console.log("=== Course Validation Passed ===");
+    console.log("Proceeding with course details:", {
+      courseTitle: courseDetails?.data?.title,
+      courseSlug: courseDetails?.data?.slug,
+      categorySlug: courseDetails?.data?.category_slug,
+      specializationSlug: courseDetails?.data?.specialization_slug,
+    });
+
+    console.log("Category Details:", {
+      categorySpecializationSlug: categoryDetails?.data?.specialization_slug,
+      decodedDynamicTwo: decodeURIComponent(dynamicTwo),
+    });
+  } else if (
+    !coursesByCategories ||
+    !categoryDetails ||
+    !checkCity ||
+    categoryDetails?.data?.slug !== decodeURIComponent(dynamicThree) ||
+    categoryDetails?.data?.specialization_slug !==
+      decodeURIComponent(dynamicTwo)
+  ) {
+    console.log("=== Category Validation Failed ===");
+    console.log("Category Validation Details:", {
+      hasCoursesByCategories: !!coursesByCategories,
+      hasCategoryDetails: !!categoryDetails,
+      categorySlugMatch:
+        categoryDetails?.data?.slug === decodeURIComponent(dynamicThree),
+      specializationSlugMatch:
+        `${categoryDetails?.data?.specialization_slug}` ===
+        decodeURIComponent(dynamicTwo),
+      categoryData: categoryDetails?.data,
+      dynamicParams: {
+        dynamicOne,
+        dynamicTwo,
+        dynamicThree,
+      },
+    });
     return notFound();
   }
 
-  // Final rendering logic
+  // if (!courseDetails && !coursesByCategories && !categoryDetails) {
+  //   console.log(
+  //     "No course details or specialization categories found, returning NotFound."
+  //   );
+  //   return notFound();
+  // }
   return (
     <>
       {courseDetails ? (

@@ -33,12 +33,13 @@ const SpecializationSection: React.FC<SpecializationSectionProps> = ({
       <div className="container md:px-16 p-4 ">
         {/* Rest of component remains the same */}
         <div className="mb-6 ">
-          <div className="flex flex-wrap md:justify-start justify-center w-full gap-4  overflow-x-auto py-2 custom-scrollbar">
+          <div className="flex  flex-wrap md:justify-start justify-center w-full gap-4  overflow-x-auto py-2 custom-scrollbar">
             {data?.length ? (
               data.map((spec) => (
                 <h2
                   key={spec.id}
                   onClick={() => setSelectedSpec(spec)}
+                  // href={spec.slug}
                   className={`w-fit px-4 py-4 h-10 flex items-center justify-center text-center cursor-pointer rounded-lg text-base border transition-colors ${
                     selectedSpec?.id === spec.id
                       ? "bg-primary text-white border-blue-500"

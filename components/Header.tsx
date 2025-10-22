@@ -57,12 +57,15 @@ const Header: React.FC<HeaderProps> = ({ secondary, icon_white, bg }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const { handleSwitchLanguage, isLoading } = useSwitchLanguage();
-
+  const [mounted, setmounted] = useState(false);
   // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  useEffect(() => {
+    setmounted(true);
   }, []);
 
   // Toggle mobile menu
@@ -167,15 +170,14 @@ const Header: React.FC<HeaderProps> = ({ secondary, icon_white, bg }) => {
 
   return (
     <>
-      {/* Inject JSON-LD */}
-      {Object.values(jsonLd).map((schema, index) => (
-        <script
-          key={index}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      ))}
-
+      {mounted &&
+        Object.values(jsonLd).map((schema, index) => (
+          <script
+            key={index}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+        ))}
       {/* Header */}
       <header
         className={`fixed top-0 w-full bg-primary z-[999] transition-all duration-300 ease-in-out ${

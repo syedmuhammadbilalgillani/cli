@@ -299,31 +299,35 @@ const CourseListing: React.FC<CourseListingProps> = ({
                         ))}
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Select City
-                      </label>
-                      <select
-                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-secondary focus:border-secondary"
-                        value={selectedOptions[course?.id]?.selectedCity || ""}
-                        onChange={(e) =>
-                          handleSelectChange(
-                            course?.id,
-                            "selectedCity",
-                            e.target.value
-                          )
-                        }
-                      >
-                        <option value="" disabled>
+                    {!hideDropdown && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
                           Select City
-                        </option>
-                        {course?.available_cities.map((city: any) => (
-                          <option key={city.id} value={city.slug}>
-                            {city.name}
+                        </label>
+                        <select
+                          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-secondary focus:border-secondary"
+                          value={
+                            selectedOptions[course?.id]?.selectedCity || ""
+                          }
+                          onChange={(e) =>
+                            handleSelectChange(
+                              course?.id,
+                              "selectedCity",
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="" disabled>
+                            Select City
                           </option>
-                        ))}
-                      </select>
-                    </div>
+                          {course?.available_cities.map((city: any) => (
+                            <option key={city.id} value={city.slug}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-base font-semibold text-gray-800">
@@ -333,11 +337,13 @@ const CourseListing: React.FC<CourseListingProps> = ({
                       href={`/register?course=${course?.slug}&date=${
                         selectedOptions[course?.id]?.selectedDate || ""
                       }&city=${
-                        selectedOptions[course?.id]?.selectedCity || ""
+                        !hideDropdown
+                          ? selectedOptions[course?.id]?.selectedCity || ""
+                          : params
                       }`}
-                      className="px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600"
+                      className="px-4 py-2 text-sm font-medium text-white bg-secondary rounded-md hover:bg-secondary"
                     >
-                      Register
+                      <TranslatedText ns="common" textKey="table.register" />
                     </Link>
                   </div>
                 </CardContent>

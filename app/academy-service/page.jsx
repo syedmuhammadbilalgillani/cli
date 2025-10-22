@@ -430,9 +430,24 @@ export default function AcademyService({ params }) {
         <div className="container mx-auto px-4 py-8">
           <Tabs defaultValue="all" className="mb-12">
             <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="all">{t.tabs.all}</TabsTrigger>
-              <TabsTrigger value="academic">{t.tabs.academic}</TabsTrigger>
-              <TabsTrigger value="support">{t.tabs.support}</TabsTrigger>
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-secondary data-[state=active]:text-white"
+              >
+                {t.tabs.all}
+              </TabsTrigger>
+              <TabsTrigger
+                value="academic"
+                className="data-[state=active]:bg-secondary data-[state=active]:text-white"
+              >
+                {t.tabs.academic}
+              </TabsTrigger>
+              <TabsTrigger
+                value="support"
+                className="data-[state=active]:bg-secondary data-[state=active]:text-white"
+              >
+                {t.tabs.support}
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="all">
               <ServiceCards services={t.services.slice(0, 6)} isRTL={isRTL} />
@@ -472,7 +487,7 @@ export default function AcademyService({ params }) {
             <p className="mb-8 max-w-2xl mx-auto text-base">{t.description}</p>
             <Link
               href={`/consulting-services`}
-              className="text-white text-sm bg-secondary p-2 rounded-sm"
+              className="text-white text-sm bg-  p-2 rounded-sm"
             >
               {t.schedule}
             </Link>
@@ -520,7 +535,7 @@ function ServiceCards({ services, isRTL }) {
                   }`}
                 >
                   <CheckCircleIcon
-                    className={`h-5 w-5 text-green-500 ${
+                    className={`h-5 w-5 text-secondary ${
                       isRTL ? "ml-2" : "mr-2"
                     }`}
                   />

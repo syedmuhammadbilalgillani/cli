@@ -11,11 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const metadataEn: Metadata = {
     title: "About us - London Crown Institute of Training",
     description:
-      "At Crown London Institute, we empower professionals with cutting-edge training programs that transform futures. Discover our mission and vision.",
+      "At London Crown Institute of Training, we empower professionals with cutting-edge training programs that transform futures. Discover our mission and vision.",
     openGraph: {
       title: "About us - London Crown Institute of Training",
       description:
-        "At Crown London Institute, we empower professionals with cutting-edge training programs that transform futures. Discover our mission and vision.",
+        "At London Crown Institute of Training, we empower professionals with cutting-edge training programs that transform futures. Discover our mission and vision.",
       url: "https://clinstitute.co.uk/about",
       type: "website",
 
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "https://clinstitute.co.uk/Logocrown.webp",
           width: 800,
           height: 600,
-          alt: "Crown London Institute",
+          alt: "London Crown Institute of Training",
         },
       ],
     },
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "About us - London Crown Institute of Training",
       description:
-        "At Crown London Institute, we empower professionals with cutting-edge training programs that transform futures. Discover our mission and vision.",
+        "At London Crown Institute of Training, we empower professionals with cutting-edge training programs that transform futures. Discover our mission and vision.",
     },
   };
 

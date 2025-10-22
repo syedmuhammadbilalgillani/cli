@@ -4,14 +4,14 @@ import { fetchBlogBySlug } from "@/requests/blogs/api";
 import { Metadata, ResolvingMetadata } from "next";
 import Image from "next/image";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // Metadata generation for SEO
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string; category: string }> },
   _parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { slug,category } = await params;
+  const { slug, category } = await params;
 
   const ARABIC_TEXTS = {
     instituteName: "معهد لندن كراون للتدريب",
@@ -43,11 +43,11 @@ export async function generateMetadata(
         siteName: TEXTS.instituteName,
         title,
         description,
-        url: `${DOMAIN_URL}/blogs/${category}/${slug}`,
+        url: `${DOMAIN_URL}/blog/${category}/${slug}`,
         images: [image],
       },
       alternates: {
-        canonical: `${DOMAIN_URL}/blogs/${category}/${slug}`,
+        canonical: `${DOMAIN_URL}/blog/${category}/${slug}`,
       },
       twitter: {
         card: "summary_large_image",
@@ -79,6 +79,8 @@ const BlogPost = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params;
 
   const data = await fetchBlogBySlug({ slug: slug });
+  console.log(data, "data");
+
   return (
     <>
       <div className="max-w-2xl mx-auto mt-10">
@@ -89,13 +91,15 @@ const BlogPost = async ({ params }: { params: Promise<{ slug: string }> }) => {
 
           <div className="flex items-center mt-4 md:mt-0 md:ml-4">
             <div className="relative w-full max-h-fit h-full">
-              <Image
-                src={data?.data?.featured_image}
-                alt={data?.data?.author}
-                className="object-contain"
-                height={600}
-                width={600}
-              />
+              {data?.data?.featured_image === "" ? null : (
+                <Image
+                  src={data?.data?.featured_image}
+                  alt={data?.data?.author}
+                  className="object-contain"
+                  height={600}
+                  width={600}
+                />
+              )}
             </div>
           </div>
 

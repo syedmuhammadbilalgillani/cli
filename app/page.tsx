@@ -23,7 +23,7 @@ const Home = async () => {
   return (
     <>
       <Design image={"/Images.png"} search center={true}>
-        <div className="flex justify-between w-full px-[10%] md:flex-nowrap flex-wrap relative z-50 mx-auto">
+        <div className="flex justify-between w-full px-[10%] max-sm:px-[5%] md:flex-nowrap flex-wrap relative z-50 mx-auto">
           <div className="space-y-6 text-start">
             <h1 className="md:mt-5 mt-10 md:text-5xl text-2xl mx-10 font-bold text-white">
               <TranslatedText ns="common" textKey="home.one" />{" "}

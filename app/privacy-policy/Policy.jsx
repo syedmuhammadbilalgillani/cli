@@ -52,9 +52,9 @@ export default function PrivacyPolicy() {
     <>
       <Head>
         <title><TranslatedText ns="common" textKey="metaTitle" /></title>
-        <meta name="description" content="At Crown London Institute, we're committed to assisting you at every stage." />
+        <meta name="description" content="At London Crown Institute of Training, we're committed to assisting you at every stage." />
         <meta property="og:title" content="Privacy Policy - London Crown Institute of Training" />
-        <meta property="og:description" content="At Crown London Institute, we're committed to assisting you at every stage." />
+        <meta property="og:description" content="At London Crown Institute of Training, we're committed to assisting you at every stage." />
       </Head>
 
 

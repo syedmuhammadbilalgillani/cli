@@ -42,9 +42,11 @@ export const fetchBlogCategoryBySlug = async ({ slug }: { slug: string }) => {
     return null;
   }
 };
-export const fetchBlogMetaDataBySlug = async ({ slug }: { slug: string }) => {
+export const fetchBlogArticleCard = async ({ slug }: { slug: string }) => {
   try {
-    const res = await axiosInstance.get(`/blogs/${slug}/bl`);
+    const res = await axiosInstance.get(
+      `/blogs/${slug}/category?per_page=20&page=1`
+    );
     return res.data ?? null;
   } catch (error) {
     return null;

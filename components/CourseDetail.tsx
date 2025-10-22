@@ -1,18 +1,18 @@
 "use client";
 
-import { LOCALE_LANGUAGE } from "@/constant/apiUrl";
+import { generateCourseDetailCrumbsJsonLdData } from "@/constant/schema";
 import TranslatedText from "@/lang/TranslatedText";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useParams } from "next/navigation";
 import { Button } from "./ui/button";
 import { ChevronsUpDown } from "lucide-react";
-import { useParams } from "next/navigation";
-import { generateCourseDetailCrumbsJsonLdData } from "@/constant/schema";
 
 interface City {
   slug: string;
@@ -23,7 +23,6 @@ interface City {
 interface DateItem {
   date: string;
 }
-
 interface Course {
   slug: string;
   title: string;
@@ -39,11 +38,6 @@ interface Course {
   available_dates: DateItem[];
   available_cities: City[];
 }
-
-interface Params {
-  slug: string;
-}
-
 interface CourseDetalProps {
   course: Course;
   params: string;
@@ -57,7 +51,7 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
 }) => {
   const cityCheck = (slug: string): string => {
     if (slug) {
-      return course?.available_cities?.find((city) => city.slug === slug)
+      return course?.available_cities?.find((city: any) => city.slug === slug)
         ? slug
         : "";
     }
@@ -97,10 +91,19 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
     }
     return `/register?course=${course.slug}`;
   };
+
+  function formatCityName(city: string | undefined): string {
+    if (!city) return "Select a City";
+    return city
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  }
+
   const jsonLdData = generateCourseDetailCrumbsJsonLdData({
     course: course,
     cityPath: isCity,
-    cityParams: decodeURIComponent(dynamicOne as string) ,
+    cityParams: decodeURIComponent(dynamicOne as string),
   });
 
   return (
@@ -135,7 +138,6 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
           {/* Main Content */}
           <div className="flex-1">
             <div className="flex flex-col gap-10 p-3">
-              {/* Tables for Dates and Cities */}
               <div className="flex flex-col gap-6 mt-6 border-[2px] shadow-lg p-6 rounded-xl">
                 {/* Dates Table */}
                 <Collapsible
@@ -328,12 +330,11 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
                 <div className="w-full h-[1px] bg-secondary" />
                 {course?.summary && mounted && (
                   <div suppressHydrationWarning={true}>
-                    <p
-                      className="w-full py-2 text-base   text-black/60"
+                    <div
                       dangerouslySetInnerHTML={{
                         __html: course?.summary ?? "",
                       }}
-                    ></p>
+                    ></div>
                   </div>
                 )}
               </div>
@@ -346,11 +347,13 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
                   className="py-2 text-2xl font-bold   text-primary"
                 />
                 <div className="w-full h-[1px] bg-secondary" />
-
-                <p
-                  className="w-full py-2 text-base   text-black/60"
-                  dangerouslySetInnerHTML={{ __html: course?.objectives ?? "" }}
-                ></p>
+                {mounted && (
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: course?.objectives ?? "",
+                    }}
+                  ></div>
+                )}
               </div>
 
               {/* Content Section */}
@@ -361,10 +364,11 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
                   className="py-2 text-2xl font-bold   text-primary"
                 />
                 <div className="w-full h-[1px] bg-secondary" />
-                <p
-                  className="w-full py-2 text-base   text-black/60"
-                  dangerouslySetInnerHTML={{ __html: course?.content ?? "" }}
-                ></p>
+                {mounted && (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: course?.content ?? "" }}
+                  ></div>
+                )}
               </div>
             </div>
           </div>
@@ -374,6 +378,40 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
                 {course.title}
               </h2>
 
+              {/* Language */}
+              {/* <div className="mt-4 flex justify-between">
+                <TranslatedText
+                  textKey={"courseDetails.language"}
+                  as="h3"
+                  className="text-md font-medium text-primary"
+                />
+                <p className="text-sm text-gray-600">
+                  {course.language || "English / Arabic"}
+                </p>
+              </div> */}
+
+              {/* Certificate */}
+              {/* <div className="mt-4 flex justify-between">
+                <TranslatedText
+                  textKey={"courseDetails.certificate"}
+                  as="h3"
+                  className="text-md font-medium text-primary"
+                />
+                <p className="text-sm text-gray-600">
+                  {course.certificate ? (
+                    <TranslatedText
+                      ns="common"
+                      textKey="courseDetails.certificateProvided"
+                    />
+                  ) : (
+                    <TranslatedText
+                      ns="common"
+                      textKey="courseDetails.noCertificate"
+                    />
+                  )}
+                </p>
+              </div> */}
+
               {/* Date */}
               <div className="mt-4 flex justify-between">
                 <TranslatedText
@@ -382,7 +420,7 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
                   className="text-md font-medium text-primary"
                 />
                 <p className="text-sm text-gray-600">
-                  {selectedDate || customDate || "Select a Date"}
+                  {selectedDate || customDate || "Date"}
                 </p>
               </div>
 

@@ -2,12 +2,12 @@
 import { Blog_Category } from "@/components/Blog_Category";
 import Blogs from "@/components/Blogs";
 import HeroSection from "@/components/HeroSection";
-import { BACKEND_URL, DOMAIN_URL, LOCALE_LANGUAGE } from "@/constant/apiUrl";
+import { DOMAIN_URL, LOCALE_LANGUAGE } from "@/constant/apiUrl";
 import { fetchBlogCategoryBySlug } from "@/requests/blogs/api";
 import { notFound } from "next/navigation";
-
+import { fetchBlogArticleCard } from "../../../requests/blogs/api";
 export const revalidate = 60; // Revalidate data every 60 seconds
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 
 // Fetch Metadata Dynamically
@@ -95,50 +95,16 @@ export async function generateMetadata({ params }) {
   }
 }
 
-// Helper function to format category name
-function formatCategoryName(category) {
-  return category
-    .replace(/[-_]/g, " ")
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-}
-
-// Fetch blog category data
-async function fetchCategoryArticles(category) {
-  try {
-    const response = await fetch(
-      `${BACKEND_URL}/blogs/${category}/category?per_page=20&page=1`,
-      {
-        next: { revalidate: 60 },
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": LOCALE_LANGUAGE,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch articles for category: ${category}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error fetching category articles:", error);
-    return { data: [] };
-  }
-}
-
 // Main Page Component with SSR
 export default async function Page({ params }) {
   const { category } = await params;
 
   try {
-    const [articles] = await Promise.all([fetchCategoryArticles(category)]);
+    const articles = await fetchBlogArticleCard({ slug: category });
     const data = await fetchBlogCategoryBySlug({ slug: category });
-
+    console.log(articles, "articles");
     // If no articles found for this category
-    if (!articles?.data || articles.data.length === 0) {
+    if (!articles?.data || articles?.data?.length === 0) {
       return notFound();
     }
 
@@ -159,7 +125,7 @@ export default async function Page({ params }) {
       </>
     );
   } catch (error) {
-    console.error("Error rendering page:", error);
+    // console.error("Error rendering page:", error);
     return notFound();
   }
 }
