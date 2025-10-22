@@ -226,11 +226,18 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
                     className="text-xl font-bold text-primary mb-4"
                     textKey="courseDetails.customDateSelection"
                   />
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-4 relative">
+                    <label
+                      className="max-md:block hidden  absolute top-[4%] left-2"
+                      htmlFor="pickyourdesiredda te"
+                    >
+                      {!customDate && "Pick your desired date"}
+                    </label>
                     <input
                       id="custom-date"
                       type="date"
                       className="block w-full text-primary px-4 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                      placeholder="Pick your desired date"
                       value={customDate}
                       onChange={handleCustomDateChange}
                     />
