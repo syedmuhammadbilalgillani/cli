@@ -28,16 +28,12 @@ const SpecializationSection: React.FC<SpecializationSectionProps> = ({
     data?.length ? data[0] : null
   );
 
-
-
- 
   return (
     <>
-     
       <div className="container md:px-16 p-4 ">
         {/* Rest of component remains the same */}
         <div className="mb-6 ">
-          <div className="flex md:flex-nowrap flex-wrap md:justify-start justify-center w-full gap-4  overflow-x-auto py-2 custom-scrollbar">
+          <div className="flex flex-wrap md:justify-start justify-center w-full gap-4  overflow-x-auto py-2 custom-scrollbar">
             {data?.length ? (
               data.map((spec) => (
                 <h2

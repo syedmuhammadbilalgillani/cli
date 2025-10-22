@@ -4,6 +4,15 @@ import { LOCALE_LANGUAGE } from "@/constant/apiUrl";
 import TranslatedText from "@/lang/TranslatedText";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Button } from "./ui/button";
+import { ChevronsUpDown } from "lucide-react";
+import { useParams } from "next/navigation";
+import { generateCourseDetailCrumbsJsonLdData } from "@/constant/schema";
 
 interface City {
   slug: string;
@@ -38,9 +47,14 @@ interface Params {
 interface CourseDetalProps {
   course: Course;
   params: string;
+  isCity: boolean;
 }
 
-const CourseDetal: React.FC<CourseDetalProps> = ({ course, params }) => {
+const CourseDetal: React.FC<CourseDetalProps> = ({
+  course,
+  params,
+  isCity = false,
+}) => {
   const cityCheck = (slug: string): string => {
     if (slug) {
       return course?.available_cities?.find((city) => city.slug === slug)
@@ -55,7 +69,9 @@ const CourseDetal: React.FC<CourseDetalProps> = ({ course, params }) => {
   );
   const [selectedCity, setSelectedCity] = useState<string>(cityCheck(params));
   const [customDate, setCustomDate] = useState<string>("");
-
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isCityOpen, setIsCityOpen] = React.useState(false);
+  const { dynamicOne } = useParams();
   const [mounted, setMounted] = useState<boolean>(false);
   useEffect(() => {
     setMounted(true);
@@ -81,162 +97,23 @@ const CourseDetal: React.FC<CourseDetalProps> = ({ course, params }) => {
     }
     return `/register?course=${course.slug}`;
   };
+  const jsonLdData = generateCourseDetailCrumbsJsonLdData({
+    course: course,
+    cityPath: isCity,
+    cityParams: decodeURIComponent(dynamicOne as string) ,
+  });
 
-  function formatCityName(city: string | undefined): string {
-    if (!city) return "Select a City";
-    return city
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  }
-
-  const jsonLdData =
-    mounted && course
-      ? LOCALE_LANGUAGE === "ar"
-        ? {
-            "@context": "https://schema.org",
-            "@type": "Course",
-            name: course?.arabic_title || "دورة بدون اسم",
-            description: course?.arabic_summary || "لا يوجد وصف.",
-            educationalCredentialAwarded: course?.arabic_category || "الهندسة",
-            provider: {
-              "@type": "Organization",
-              name: "معهد التاج للتدريب - لندن",
-              sameAs: "https://ar.clinstitute.co.uk/",
-            },
-            image: {
-              "@type": "ImageObject",
-              url:
-                course?.image ||
-                "https://ar.clinstitute.co.uk/default-course-image.webp",
-            },
-            hasCourseInstance: {
-              "@type": "CourseInstance",
-              courseMode: "حضوري",
-              courseWorkload: "٢٢ ساعة",
-              courseSchedule: {
-                "@type": "Schedule",
-                duration: "أسبوع",
-                repeatCount: "1",
-                repeatFrequency: "أسبوعيًا",
-                startDate: course?.available_dates?.[0]?.date || "2025-01-01",
-                endDate:
-                  course?.available_dates?.[1]?.date ||
-                  course?.available_dates?.[0]?.date ||
-                  "2025-01-07",
-              },
-              location: {
-                "@type": "Place",
-                name:
-                  course?.available_cities?.length > 0
-                    ? course.available_cities.find(
-                        (city) => city.slug === params
-                      )?.arabic_name ||
-                      course.available_cities
-                        .map((city) => city.arabic_name || city.name)
-                        .join("، ")
-                    : "المدينة الافتراضية",
-              },
-            },
-            offers: {
-              "@type": "Offer",
-              category: "مدفوع",
-              price: course?.price || "3200.00",
-              priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              validFrom: course?.available_dates?.[0]?.date || "2025-01-01",
-            },
-            review: {
-              "@type": "Review",
-              datePublished: new Date().toISOString(),
-              dateModified: new Date().toISOString(),
-              author: {
-                "@type": "Person",
-                name: "المسؤول",
-              },
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: "4.6",
-              },
-            },
-          }
-        : {
-            "@context": "https://schema.org",
-            "@type": "Course",
-            name: course?.title || "Unnamed Course",
-            description: course?.summary || "No description available.",
-            educationalCredentialAwarded: course?.category || "Engineering",
-            provider: {
-              "@type": "Organization",
-              name: "London Crown Institute of Training",
-              sameAs: "https://clinstitute.co.uk/",
-            },
-            image: {
-              "@type": "ImageObject",
-              url:
-                course?.image ||
-                "https://clinstitute.co.uk/default-course-image.webp",
-            },
-            hasCourseInstance: {
-              "@type": "CourseInstance",
-              courseMode: "Onsite",
-              courseWorkload: "PT22H",
-              courseSchedule: {
-                "@type": "Schedule",
-                duration: "P1W",
-                repeatCount: "1",
-                repeatFrequency: "Weekly",
-                startDate: course?.available_dates?.[0]?.date || "2025-01-01",
-                endDate:
-                  course?.available_dates?.[1]?.date ||
-                  course?.available_dates?.[0]?.date ||
-                  "2025-01-07",
-              },
-              location: {
-                "@type": "Place",
-                name:
-                  course?.available_cities?.length > 0
-                    ? course.available_cities.find(
-                        (city) => city.slug === params
-                      )?.name ||
-                      course.available_cities
-                        .map((city) => city.name)
-                        .join(", ")
-                    : "Default City",
-              },
-            },
-            offers: {
-              "@type": "Offer",
-              category: "Paid",
-              price: course?.price || "3200.00",
-              priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              validFrom: course?.available_dates?.[0]?.date || "2025-01-01",
-            },
-            review: {
-              "@type": "Review",
-              datePublished: new Date().toISOString(),
-              dateModified: new Date().toISOString(),
-              author: {
-                "@type": "Person",
-                name: "Admin",
-              },
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: "4.6",
-              },
-            },
-          }
-      : null;
-  // console.log(course, "course");
   return (
     <div suppressHydrationWarning>
-      {mounted && jsonLdData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
-        />
-      )}
+      {mounted &&
+        jsonLdData &&
+        Object.values(jsonLdData).map((schema, index) => (
+          <script
+            key={index}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+        ))}
 
       <div className="md:mx-10 mx-2">
         {/* Sticky Title and Register Button */}
@@ -261,116 +138,184 @@ const CourseDetal: React.FC<CourseDetalProps> = ({ course, params }) => {
               {/* Tables for Dates and Cities */}
               <div className="flex flex-col gap-6 mt-6 border-[2px] shadow-lg p-6 rounded-xl">
                 {/* Dates Table */}
-                <div>
-                  <h2 className="text-xl font-bold text-primary mb-4">
-                    <TranslatedText textKey={"courseDetails.availableDates"} />
-                  </h2>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-300   text-sm">
-                      <tbody>
-                        {course?.available_dates.map((item, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
-                            <td className="px-4 py-2 border-b">
-                              <div
-                                className={`w-5 h-5 border-2 rounded-md cursor-pointer flex items-center justify-center ${
-                                  selectedDate === item.date
-                                    ? "bg-primary"
-                                    : "bg-white"
-                                }`}
-                                onClick={() => handleDateChange(item.date)}
-                              >
-                                {selectedDate === item.date && (
-                                  <span className="text-white text-sm font-bold">
-                                    ✔
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-2 border-b text-primary">
-                              {item.date}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                <Collapsible
+                  open={isOpen}
+                  onOpenChange={setIsOpen}
+                  className="flex flex-col gap-2"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-4 px-4">
+                    <h2 className="text-xl font-bold text-primary mb-4">
+                      <TranslatedText textKey="courseDetails.availableDates" />
+                    </h2>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <ChevronsUpDown />
+                        <span className="sr-only">Toggle</span>
+                      </Button>
+                    </CollapsibleTrigger>
                   </div>
-                </div>
+
+                  {/* Always visible first item */}
+                  <div className="px-4 py-2 font-mono text-sm w-full">
+                    {course?.available_dates.slice(0, 1).map((item, index) => (
+                      <div
+                        key={index}
+                        className="hover:bg-gray-50 grid grid-cols-3 border-b w-full"
+                      >
+                        <div className="px-4 py-2">
+                          <div
+                            className={`w-5 h-5 border-2 rounded-md cursor-pointer flex items-center justify-center ${
+                              selectedDate === item.date
+                                ? "bg-primary"
+                                : "bg-white"
+                            }`}
+                            onClick={() => handleDateChange(item.date)}
+                          >
+                            {selectedDate === item.date && (
+                              <span className="text-white text-sm font-bold">
+                                ✔
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="px-4 py-2 text-primary col-span-2">
+                          {item.date}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Collapsible additional items */}
+                  <CollapsibleContent className="flex flex-col gap-0 px-4 font-mono text-sm w-full">
+                    {course?.available_dates.slice(1).map((item, index) => (
+                      <div
+                        key={index}
+                        className="hover:bg-gray-50 grid grid-cols-3 border-b w-full"
+                      >
+                        <div className="px-4 py-2">
+                          <div
+                            className={`w-5 h-5 border-2 rounded-md cursor-pointer flex items-center justify-center ${
+                              selectedDate === item.date
+                                ? "bg-primary"
+                                : "bg-white"
+                            }`}
+                            onClick={() => handleDateChange(item.date)}
+                          >
+                            {selectedDate === item.date && (
+                              <span className="text-white text-sm font-bold">
+                                ✔
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="px-4 py-2 text-primary col-span-2">
+                          {item.date}
+                        </div>
+                      </div>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
 
                 {/* Custom Date Selector */}
-                <div className="mt-6">
+                <section className="mt-6">
                   <TranslatedText
                     as="h2"
                     className="text-xl font-bold text-primary mb-4"
-                    textKey={"courseDetails.customDateSelection"}
+                    textKey="courseDetails.customDateSelection"
                   />
                   <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-4">
-                      <input
-                        id="custom-date"
-                        type="date"
-                        className="block w-full text-primary px-4 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary"
-                        value={customDate}
-                        onChange={handleCustomDateChange}
-                      />
-                    </div>
+                    <input
+                      id="custom-date"
+                      type="date"
+                      className="block w-full text-primary px-4 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                      value={customDate}
+                      onChange={handleCustomDateChange}
+                    />
                     {customDate && (
                       <p className="text-sm text-secondary mt-2">
-                        <TranslatedText
-                          textKey={"courseDetails.selectedCustomDate"}
-                        />
+                        <TranslatedText textKey="courseDetails.selectedCustomDate" />{" "}
                         <strong>{customDate}</strong>
                       </p>
                     )}
                   </div>
-                </div>
+                </section>
 
                 {/* Cities Table */}
-                <div className="mt-6">
-                  <TranslatedText
-                    textKey={"courseDetails.availableCities"}
-                    className="text-xl font-bold text-primary mb-4"
-                    as="h2"
-                  />
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-300   text-sm">
-                      <tbody>
-                        {course?.available_cities.map((city, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
-                            <td className="px-4 py-2 border-b">
-                              <div
-                                className={`w-5 h-5 border-2 rounded-md cursor-pointer flex items-center justify-center ${
-                                  selectedCity === city.slug
-                                    ? "bg-primary"
-                                    : "bg-white"
-                                }`}
-                                onClick={() => handleCityChange(city.slug)}
-                              >
-                                {selectedCity === city.slug && (
-                                  <span className="text-white text-sm font-bold">
-                                    ✔
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-                            <td className="px-4 py-2 border-b text-primary">
-                              {city.name}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                <Collapsible
+                  open={isCityOpen}
+                  onOpenChange={setIsCityOpen}
+                  className="flex flex-col gap-2 mt-6"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between gap-4 px-4">
+                    <h2 className="text-xl font-bold text-primary mb-4">
+                      <TranslatedText textKey="courseDetails.availableCities" />
+                    </h2>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <ChevronsUpDown />
+                        <span className="sr-only">Toggle</span>
+                      </Button>
+                    </CollapsibleTrigger>
                   </div>
-                  {/* Price Section Below Cities */}
-                  <div className="mt-4">
-                    {/* <TranslatedText
-                          as="h3"
-                          className="text-base my-6 font-bold text-primary mb-2"
-                        /> */}
 
-                    <p className="text-base text-primary">£ {course.price}</p>
-                  </div>
-                </div>
+                  {/* Always visible first city */}
+                  {course?.available_cities.slice(0, 1).map((city, index) => (
+                    <div
+                      key={index}
+                      className="hover:bg-gray-50 border-b grid grid-cols-3"
+                    >
+                      <div className="px-4 py-2">
+                        <div
+                          className={`w-5 h-5 border-2 rounded-md cursor-pointer flex items-center justify-center ${
+                            selectedCity === city.slug
+                              ? "bg-primary"
+                              : "bg-white"
+                          }`}
+                          onClick={() => handleCityChange(city.slug)}
+                        >
+                          {selectedCity === city.slug && (
+                            <span className="text-white text-sm font-bold">
+                              ✔
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="px-4 py-2 text-primary">{city.name}</div>
+                    </div>
+                  ))}
+
+                  {/* Collapsible Content for remaining cities */}
+                  <CollapsibleContent className="overflow-x-auto">
+                    {course?.available_cities.slice(1).map((city, index) => (
+                      <div
+                        key={index}
+                        className="hover:bg-gray-50 border-b grid grid-cols-3"
+                      >
+                        <div className="px-4 py-2">
+                          <div
+                            className={`w-5 h-5 border-2 rounded-md cursor-pointer flex items-center justify-center ${
+                              selectedCity === city.slug
+                                ? "bg-primary"
+                                : "bg-white"
+                            }`}
+                            onClick={() => handleCityChange(city.slug)}
+                          >
+                            {selectedCity === city?.slug && (
+                              <span className="text-white text-sm font-bold">
+                                ✔
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="px-4 py-2 text-primary">
+                          {city.name}
+                        </div>
+                      </div>
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
 
               {/* Summary Section */}
@@ -429,40 +374,6 @@ const CourseDetal: React.FC<CourseDetalProps> = ({ course, params }) => {
                 {course.title}
               </h2>
 
-              {/* Language */}
-              {/* <div className="mt-4 flex justify-between">
-                <TranslatedText
-                  textKey={"courseDetails.language"}
-                  as="h3"
-                  className="text-md font-medium text-primary"
-                />
-                <p className="text-sm text-gray-600">
-                  {course.language || "English / Arabic"}
-                </p>
-              </div> */}
-
-              {/* Certificate */}
-              {/* <div className="mt-4 flex justify-between">
-                <TranslatedText
-                  textKey={"courseDetails.certificate"}
-                  as="h3"
-                  className="text-md font-medium text-primary"
-                />
-                <p className="text-sm text-gray-600">
-                  {course.certificate ? (
-                    <TranslatedText
-                      ns="common"
-                      textKey="courseDetails.certificateProvided"
-                    />
-                  ) : (
-                    <TranslatedText
-                      ns="common"
-                      textKey="courseDetails.noCertificate"
-                    />
-                  )}
-                </p>
-              </div> */}
-
               {/* Date */}
               <div className="mt-4 flex justify-between">
                 <TranslatedText
@@ -483,7 +394,19 @@ const CourseDetal: React.FC<CourseDetalProps> = ({ course, params }) => {
                   className="text-md font-medium text-primary"
                 />
                 <p className="text-sm text-gray-600">
-                  {formatCityName(selectedCity)}
+                  {selectedCity === ""
+                    ? isCity
+                      ? course?.available_cities?.find(
+                          (c: any) =>
+                            decodeURIComponent(c?.slug) ===
+                            decodeURIComponent(dynamicOne as any)
+                        )?.name
+                      : course?.available_cities[0].name
+                    : course?.available_cities?.find(
+                        (c: any) =>
+                          decodeURIComponent(c?.slug) ===
+                          decodeURIComponent(selectedCity)
+                      )?.name}
                 </p>
               </div>
 

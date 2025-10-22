@@ -16,7 +16,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -247,7 +247,11 @@ export default async function DynamicThree({
           />
 
           <Suspense fallback={<Loading />}>
-            <CourseDetal course={courseDetails?.data} params={dynamicThree} />
+            <CourseDetal
+              course={courseDetails?.data}
+              params={dynamicThree}
+              isCity={false}
+            />
           </Suspense>
 
           <Blogs />

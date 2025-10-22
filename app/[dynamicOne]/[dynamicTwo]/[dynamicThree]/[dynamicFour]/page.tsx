@@ -11,15 +11,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-type Params = {
-  params: {
-    dynamicThree: string;
-    dynamicOne: string;
-    dynamicTwo: string;
-    dynamicFour: string;
-  };
-};
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -102,19 +94,23 @@ export default async function DynamicFour({
   }
   const courseData = await fetchCourseDetails({ course_slug: dynamicFour });
   if (!courseData) return notFound();
-  const cityName =
-    LOCALE_LANGUAGE === "en" ? dynamicOne : decodeURIComponent(dynamicOne);
+  
   return (
     <div>
       <HeroSection
         imageUrl={courseData.data.image}
         heading={`${courseData.data.title} ${
           LOCALE_LANGUAGE === "en" ? "In" : "في"
-        } ${cityName}`}
+        } ${
+          courseData?.data?.available_cities?.find(
+            (c: any) =>
+              decodeURIComponent(c?.slug) === decodeURIComponent(dynamicOne)
+          )?.name
+        }`}
       />
 
       <Suspense fallback={<Loading />}>
-        <CourseDetal course={courseData.data} params={dynamicFour} />
+        <CourseDetal course={courseData.data} params={dynamicFour} isCity />
       </Suspense>
 
       <Blogs />
