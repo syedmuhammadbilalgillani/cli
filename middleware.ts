@@ -1,11 +1,9 @@
-// middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { LRUCache } from 'lru-cache';
 
-// Rate limit store with automatic cleanup
 const rateLimitStore = new LRUCache<string, { count: number; resetTime: number }>({
-  max: 50000, // Maximum number of IPs to track
-  ttl: 120000, // 2 minutes TTL (longer than rate limit window)
+  max: 50000,
+  ttl: 120000,
   updateAgeOnGet: false,
   updateAgeOnHas: false,
 });
@@ -26,7 +24,6 @@ function checkRateLimit(
   const record = rateLimitStore.get(key);
 
   if (!record || now > record.resetTime) {
-    // Create new record or reset expired one
     rateLimitStore.set(key, {
       count: 1,
       resetTime: now + windowMs,
@@ -50,7 +47,6 @@ function checkRateLimit(
     };
   }
 
-  // Increment count
   record.count++;
   console.log(`[Rate Limit] Request allowed for key: ${key}, count: ${record.count}/${limit}`);
   return {
@@ -61,90 +57,143 @@ function checkRateLimit(
   };
 }
 
-function getIdentifier(request: NextRequest): string {
-  // Get IP from headers (works with proxies/load balancers)
+// --- NEW HELPERS ---
+
+function normalizeIp(ip: string): string {
+  if (!ip) return 'unknown';
+  if (ip.startsWith('::ffff:')) return ip.slice(7); // ::ffff:127.0.0.1 -> 127.0.0.1
+  if (ip === '::1') return '127.0.0.1';
+  return ip;
+}
+
+function isPrivateIp(ip: string): boolean {
+  if (ip === '127.0.0.1' || ip === 'unknown') return true;
+  if (ip.startsWith('10.')) return true;
+  if (ip.startsWith('192.168.')) return true;
+
+  // 172.16.0.0 – 172.31.255.255
+  if (ip.startsWith('172.')) {
+    const second = parseInt(ip.split('.')[1] || '0', 10);
+    if (second >= 16 && second <= 31) return true;
+  }
+
+  return false;
+}
+
+function isBot(userAgent: string): boolean {
+  const ua = userAgent.toLowerCase();
+  return /bot|crawler|spider|crawl|slurp|bingpreview|facebookexternalhit|pinterest|embedly|quora link preview|flipboardproxy|whatsapp|telegrambot|discordbot/.test(
+    ua
+  );
+}
+
+function getIdentifier(request: NextRequest): {
+  ip: string;
+  isInternal: boolean;
+  userAgent: string;
+} {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
   const cfConnectingIp = request.headers.get('cf-connecting-ip');
-  const ip = 
-    forwarded?.split(',')[0]?.trim() || 
-    realIp || 
-    cfConnectingIp || 
-    'unknown';
-  
-  // Log IP detection for debugging
+
+  const rawIp =
+    forwarded?.split(',')[0]?.trim() ||
+    realIp ||
+    cfConnectingIp ||
+    // @ts-ignore: NextRequest.ip is available in Node runtime
+    (request as any).ip ||
+    '';
+
+  const ip = normalizeIp(rawIp);
+  const isInternal = isPrivateIp(ip);
+  const userAgent = request.headers.get('user-agent') || '';
+
   if (ip === 'unknown') {
     console.warn('[Rate Limit] Could not determine IP address, using "unknown"');
   }
-  
-  return ip;
+
+  return { ip, isInternal, userAgent };
 }
+
+// --- MIDDLEWARE ---
 
 export async function middleware(request: NextRequest) {
   const startTime = Date.now();
   const pathname = request.nextUrl.pathname;
   const method = request.method;
 
-  // Skip rate limiting for static assets
+  // Skip static assets
   if (
-    request.nextUrl.pathname.startsWith('/_next') ||
-    request.nextUrl.pathname.startsWith('/favicon.ico') ||
-    request.nextUrl.pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|css|js|woff|woff2)$/)
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|css|js|woff|woff2)$/)
   ) {
     console.log(`[Rate Limit] Skipping rate limit for static asset: ${pathname}`);
     return NextResponse.next();
   }
 
-  // Identify route type
-  const isSitemap = request.nextUrl.pathname.includes('sitemap');
-  const isApiRoute = 
-    request.nextUrl.pathname.startsWith('/api') || 
-    request.nextUrl.pathname.includes('route') ||
+  const isSitemap = pathname.includes('sitemap');
+  const isApiRoute =
+    pathname.startsWith('/api') ||
+    pathname.includes('route') ||
     isSitemap;
 
-  const identifier = getIdentifier(request);
-  
-  // Configure rate limits
+  const { ip, isInternal, userAgent } = getIdentifier(request);
+  const bot = isBot(userAgent);
+
+  // Optional: skip internal traffic (your own server, health checks, etc.)
+  if (isInternal) {
+    console.log(
+      `[Rate Limit] Skipping rate limit for internal traffic | IP: ${ip} | Path: ${pathname}`
+    );
+    return NextResponse.next();
+  }
+
+  // Rate limit configuration
   let limit: number;
   let windowMs: number;
   let routeType: string;
 
   if (isSitemap) {
-    limit = 10; // 10 requests per minute for sitemaps
+    // Typically mostly bots (Google, Bing, etc.)
+    limit = bot ? 120 : 30;   // example: bots get more headroom
     windowMs = 60000;
-    routeType = 'sitemap';
+    routeType = bot ? 'sitemap-bot' : 'sitemap';
   } else if (isApiRoute) {
-    limit = 30; // 30 requests per minute for API routes
+    limit = bot ? 20 : 30;
     windowMs = 60000;
-    routeType = 'api';
+    routeType = bot ? 'api-bot' : 'api';
   } else {
-    limit = 100; // 100 requests per minute for pages
+    limit = bot ? 40 : 100;   // pages: bots lower than real users
     windowMs = 60000;
-    routeType = 'page';
+    routeType = bot ? 'page-bot' : 'page';
   }
 
-  console.log(`[Rate Limit] Processing ${method} ${pathname} | IP: ${identifier} | Type: ${routeType} | Limit: ${limit}/min`);
+  console.log(
+    `[Rate Limit] Processing ${method} ${pathname} | IP: ${ip} | UA: ${userAgent} | Type: ${routeType} | Limit: ${limit}/min`
+  );
 
-  const routeKey = `${identifier}:${isApiRoute ? 'api' : 'page'}:${request.nextUrl.pathname}`;
+  // You can keep per-path keys, or simplify to per-IP+type:
+  // const routeKey = `${ip}:${routeType}`;
+  const routeKey = `${ip}:${routeType}:${pathname}`;
   const result = checkRateLimit(routeKey, limit, windowMs);
 
   const response = result.success
     ? NextResponse.next()
     : NextResponse.json(
-        { 
-          error: 'Too many requests', 
+        {
+          error: 'Too many requests',
           message: 'Rate limit exceeded. Please try again later.',
-          retryAfter: Math.ceil((result.reset - Date.now()) / 1000)
+          retryAfter: Math.ceil((result.reset - Date.now()) / 1000),
         },
-        { 
+        {
           status: 429,
           headers: {
-            'Retry-After': Math.ceil((result.reset - Date.now()) / 1000).toString()
-          }
+            'Retry-After': Math.ceil((result.reset - Date.now()) / 1000).toString(),
+          },
         }
       );
 
-  // Add rate limit headers (useful for debugging)
   response.headers.set('X-RateLimit-Limit', result.limit.toString());
   response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
   response.headers.set('X-RateLimit-Reset', new Date(result.reset).toISOString());
@@ -152,23 +201,24 @@ export async function middleware(request: NextRequest) {
   const processingTime = Date.now() - startTime;
 
   if (!result.success) {
-    // Log violations with detailed information
     console.error(
       `[Rate Limit Exceeded] ` +
-      `IP: ${identifier} | ` +
-      `Path: ${pathname} | ` +
-      `Method: ${method} | ` +
-      `Limit: ${result.limit} | ` +
-      `Reset: ${new Date(result.reset).toISOString()} | ` +
-      `Processing Time: ${processingTime}ms`
+        `IP: ${ip} | ` +
+        `Bot: ${bot} | ` +
+        `Path: ${pathname} | ` +
+        `Method: ${method} | ` +
+        `Limit: ${result.limit} | ` +
+        `Reset: ${new Date(result.reset).toISOString()} | ` +
+        `Processing Time: ${processingTime}ms`
     );
   } else {
     console.log(
       `[Rate Limit] Request allowed | ` +
-      `IP: ${identifier} | ` +
-      `Path: ${pathname} | ` +
-      `Remaining: ${result.remaining}/${result.limit} | ` +
-      `Processing Time: ${processingTime}ms`
+        `IP: ${ip} | ` +
+        `Bot: ${bot} | ` +
+        `Path: ${pathname} | ` +
+        `Remaining: ${result.remaining}/${result.limit} | ` +
+        `Processing Time: ${processingTime}ms`
     );
   }
 
