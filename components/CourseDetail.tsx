@@ -434,7 +434,7 @@ const CourseDetal: React.FC<CourseDetalProps> = ({
               {/* City */}
               <div className="mt-4 flex justify-between">
                 <TranslatedText
-                  textKey={"courseDetails.selectDate"}
+                  textKey={"courseDetails.selectCity"}
                   as="h3"
                   className="text-md font-medium text-primary"
                 />
