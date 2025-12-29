@@ -10,3 +10,7 @@ export const AR_DOMAIN_URL = "https://ar.clinstitute.co.uk";
 export const EN_DOMAIN_URL = "https://clinstitute.co.uk";
 // export const AR_DOMAIN_URL="http://localhost:3000"
 // export const EN_DOMAIN_URL="http://localhost:3001"
+export const INSITUTE_NAME =
+  LOCALE_LANGUAGE === "ar"
+    ? "معهد التاج للتدريب - لندن"
+    : "London Crown Institute of Training";
