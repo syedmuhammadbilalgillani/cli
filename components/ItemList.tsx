@@ -173,12 +173,12 @@ const CourseListing: React.FC<CourseListingProps> = ({
                                 : `/${course?.specialization_slug}/${course?.category_slug}/${course?.slug}`
                             }`}
                           >
-                            <h3>{course?.title}</h3>
+                            <h3 title={course?.title} className="max-w-[77ch] truncate">{course?.title}</h3>
                           </Link>
                         </TableCell>
                         <TableCell className="py-3 px-4">
                           <select
-                            className="w-full border border-gray-300 rounded px-5 py-2 text-sm focus:ring-secondary focus:border-secondary"
+                            className="w-full min-w-20 border border-gray-300 rounded px-1 py-2 text-sm focus:ring-secondary focus:border-secondary"
                             value={
                               selectedOptions[course?.id]?.selectedDate || ""
                             }
@@ -203,7 +203,7 @@ const CourseListing: React.FC<CourseListingProps> = ({
                         {!hideDropdown && (
                           <TableCell className="py-3 px-4">
                             <select
-                              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-secondary focus:border-secondary"
+                              className="w-full border min-w-20 border-gray-300 rounded px-1 py-2 text-sm focus:ring-secondary focus:border-secondary"
                               value={
                                 selectedOptions[course?.id]?.selectedCity || ""
                               }
